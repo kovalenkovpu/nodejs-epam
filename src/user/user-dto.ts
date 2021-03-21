@@ -11,8 +11,4 @@ interface UserDTO extends User {
 	isDeleted: boolean;
 }
 
-interface UserParams {
-	id: UserId;
-}
-
-export type { UserParams, User, UserDTO, UserId };
+export type { User, UserDTO, UserId };

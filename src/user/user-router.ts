@@ -6,6 +6,8 @@ const userRouter = express.Router();
 
 userRouter.get('/all', userController.getAll);
 
+userRouter.get('/', userController.getAutoSuggestUsers);
+
 userRouter.get('/:id', userController.getOne);
 
 userRouter.post('/', userController.create);

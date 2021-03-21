@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 
-import { IUserController } from './types/user-controller.types';
-import { UserParams, User, UserDTO } from './user-dto';
+import {
+	AutosuggestUsersQueryParams,
+	IUserController,
+	UserParams,
+} from './types/user-controller.types';
+import { User, UserDTO } from './user-dto';
 import { userService } from './user-service';
 
 class UserController implements IUserController {
@@ -16,13 +20,31 @@ class UserController implements IUserController {
 		}
 	};
 
+	getAutoSuggestUsers = (
+		req: Request<{}, UserDTO[], any, AutosuggestUsersQueryParams>,
+		res: Response<UserDTO[]>
+	) => {
+		try {
+			const { loginSubstring, limit } = req.query;
+
+			const suggestedUsers = userService.getAutoSuggestUsers(
+				loginSubstring,
+				limit
+			);
+
+			res.send(suggestedUsers);
+		} catch (error) {
+			res.status(500).json(error);
+		}
+	};
+
 	getOne = (req: Request<UserParams>, res: Response<UserDTO | string>) => {
 		try {
 			const { id } = req.params;
 			const currentUser = userService.getOne(id);
 
 			if (currentUser) {
-				res.send(currentUser);
+				return res.send(currentUser);
 			}
 
 			const errorMessage = this.generateNotFoundMessage(id);
@@ -52,7 +74,7 @@ class UserController implements IUserController {
 			const updatedUser = userService.update(id, req.body);
 
 			if (updatedUser) {
-				res.send(updatedUser);
+				return res.send(updatedUser);
 			}
 
 			const errorMessage = this.generateNotFoundMessage(id);
@@ -66,10 +88,10 @@ class UserController implements IUserController {
 	delete = (req: Request<UserParams>, res: Response<UserDTO | string>) => {
 		try {
 			const { id } = req.params;
-			const currentUser = userService.delete(id);
+			const deletedUser = userService.delete(id);
 
-			if (currentUser) {
-				res.send(currentUser);
+			if (deletedUser) {
+				return res.send(`User with id: ${id} successfully deleted`);
 			}
 
 			const errorMessage = this.generateNotFoundMessage(id);

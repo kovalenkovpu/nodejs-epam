@@ -21,12 +21,15 @@ interface IUserController {
 
 	getOne: (req: Request<UserParams>, res: Response<UserDTO | string>) => void;
 
-	create: (req: Request<{}, UserDTO, User>, res: Response<UserDTO>) => void;
+	create: (
+		req: Request<{}, UserDTO, User>,
+		res: Response<UserDTO>
+	) => Promise<void>;
 
 	update: (
 		req: Request<UserParams, UserDTO, User>,
 		res: Response<UserDTO | string>
-	) => void;
+	) => Promise<Response<UserDTO | string>>;
 
 	delete: (req: Request<UserParams>, res: Response<UserDTO | string>) => void;
 }

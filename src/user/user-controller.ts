@@ -6,7 +6,9 @@ import {
 	UserParams,
 } from './types/user-controller.types';
 import { User, UserDTO } from './user-dto';
+import { userLoginSchema, userSchema } from './user-schema';
 import { userService } from './user-service';
+import { userValidator } from './user-validator';
 
 class UserController implements IUserController {
 	private generateNotFoundMessage = (id: string) =>
@@ -55,23 +57,38 @@ class UserController implements IUserController {
 		}
 	};
 
-	create = (req: Request<{}, UserDTO, User>, res: Response<UserDTO>) => {
+	create = async (req: Request<{}, UserDTO, User>, res: Response<UserDTO>) => {
 		try {
-			const user = userService.create(req.body);
+			const { body: newUserData } = req;
+			const userData = await userValidator.validateUser(newUserData);
+
+			const existingUsers = userService.getAll();
+			await userValidator.validateUserUnique(existingUsers, newUserData);
+
+			const user = userService.create(userData);
 
 			res.send(user);
 		} catch (error) {
-			res.status(500).json(error);
+			res.status(400).json(error);
 		}
 	};
 
-	update = (
+	update = async (
 		req: Request<UserParams, UserDTO, User>,
 		res: Response<UserDTO | string>
 	) => {
 		try {
-			const { id } = req.params;
-			const updatedUser = userService.update(id, req.body);
+			const {
+				params: { id },
+				body: newUserData,
+			} = req;
+
+			const userData = await userValidator.validateUser(newUserData);
+
+			const existingUsers = userService.getAll();
+			await userValidator.validateUserUnique(existingUsers, newUserData);
+
+			const updatedUser = userService.update(id, userData);
 
 			if (updatedUser) {
 				return res.send(updatedUser);
@@ -79,9 +96,10 @@ class UserController implements IUserController {
 
 			const errorMessage = this.generateNotFoundMessage(id);
 
-			res.status(404).json(errorMessage);
+			// "return" is for TS more clear typings
+			return res.status(404).json(errorMessage);
 		} catch (error) {
-			res.status(500).json(error);
+			return res.status(400).json(error);
 		}
 	};
 

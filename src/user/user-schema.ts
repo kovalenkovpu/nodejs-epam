@@ -1,11 +1,12 @@
 import Joi from 'joi';
 
-import { User } from './user-dto';
+import { User } from './types/user-dto';
 
 const userSchema = Joi.object<User>({
 	login: Joi.string().trim().required(),
 	password: Joi.string()
 		.alphanum()
+		.trim()
 		.pattern(new RegExp('^([a-zA-Z]+[0-9]+)|([0-9]+[a-zA-Z]+)$'))
 		.required()
 		.messages({

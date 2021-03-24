@@ -5,7 +5,7 @@ import {
 	IUserController,
 	UserParams,
 } from './types/user-controller.types';
-import { User, UserDTO } from './user-dto';
+import { User, UserDTO } from './types/user-dto';
 import { userLoginSchema, userSchema } from './user-schema';
 import { userService } from './user-service';
 import { userValidator } from './user-validator';

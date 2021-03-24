@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { User, UserDTO, UserId } from '../user-dto';
+import { User, UserDTO, UserId } from './user-dto';
 
 interface AutosuggestUsersQueryParams {
 	loginSubstring?: string;

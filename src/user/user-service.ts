@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy';
 import { v4 as uuidv4 } from 'uuid';
 
 import { IUserService } from './types/user-service.types';
-import { User, UserDTO, UserId } from './user-dto';
+import { User, UserDTO, UserId } from './types/user-dto';
 
 class UserService implements IUserService {
 	private users: UserDTO[] = [];

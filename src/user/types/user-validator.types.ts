@@ -1,4 +1,4 @@
-import { User, UserDTO } from '../user-dto';
+import { User, UserDTO } from './user-dto';
 
 interface IUserValidator {
 	validateUser: (newUser: User) => Promise<User>;

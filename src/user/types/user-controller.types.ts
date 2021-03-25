@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User, UserDTO, UserId } from './user-dto';
+import { FormatterValidationError } from './user-validator.types';
 
 interface AutosuggestUsersQueryParams {
 	loginSubstring?: string;
@@ -23,12 +24,12 @@ interface IUserController {
 
 	create: (
 		req: Request<{}, UserDTO, User>,
-		res: Response<UserDTO>
+		res: Response<UserDTO | FormatterValidationError[]>
 	) => Promise<void>;
 
 	update: (
 		req: Request<UserParams, UserDTO, User>,
-		res: Response<UserDTO | string>
+		res: Response<UserDTO | FormatterValidationError[] | string>
 	) => Promise<Response<UserDTO | string>>;
 
 	delete: (req: Request<UserParams>, res: Response<UserDTO | string>) => void;

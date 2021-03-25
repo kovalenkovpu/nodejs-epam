@@ -6,7 +6,7 @@ import {
 	UserParams,
 } from './types/user-controller.types';
 import { User, UserDTO } from './types/user-dto';
-import { userLoginSchema, userSchema } from './user-schema';
+import { FormatterValidationError } from './types/user-validator.types';
 import { userService } from './user-service';
 import { userValidator } from './user-validator';
 
@@ -57,7 +57,10 @@ class UserController implements IUserController {
 		}
 	};
 
-	create = async (req: Request<{}, UserDTO, User>, res: Response<UserDTO>) => {
+	create = async (
+		req: Request<{}, UserDTO, User>,
+		res: Response<UserDTO | FormatterValidationError[]>
+	) => {
 		try {
 			const { body: newUserData } = req;
 			const userData = await userValidator.validateUser(newUserData);
@@ -69,13 +72,13 @@ class UserController implements IUserController {
 
 			res.send(user);
 		} catch (error) {
-			res.status(400).json(error);
+			res.status(400).json(userValidator.formatError(error));
 		}
 	};
 
 	update = async (
 		req: Request<UserParams, UserDTO, User>,
-		res: Response<UserDTO | string>
+		res: Response<UserDTO | FormatterValidationError[] | string>
 	) => {
 		try {
 			const {
@@ -99,7 +102,7 @@ class UserController implements IUserController {
 			// "return" is for TS more clear typings
 			return res.status(404).json(errorMessage);
 		} catch (error) {
-			return res.status(400).json(error);
+			return res.status(400).json(userValidator.formatError(error));
 		}
 	};
 

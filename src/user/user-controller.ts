@@ -21,7 +21,7 @@ class UserController implements IUserController {
   };
 
   getAutoSuggestUsers = (
-    req: Request<any, UserDTO[], any, AutosuggestUsersQueryParams>,
+    req: Request<any, UserDTO[], undefined, AutosuggestUsersQueryParams>,
     res: Response<UserDTO[]>
   ) => {
     try {

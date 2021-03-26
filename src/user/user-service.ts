@@ -8,6 +8,8 @@ import { User, UserDTO, UserId } from './types/user-dto';
 class UserService implements IUserService {
   private users: UserDTO[] = [];
 
+  // TODO: it's not clear whether to return utility fields, e.g.: "isDeleted"
+  // Seems not, but not implemented for now.
   getAll = () => this.users;
 
   getAutoSuggestUsers = (
@@ -62,14 +64,9 @@ class UserService implements IUserService {
     const currentUserIndex = this.users.findIndex((user) => id === user.id);
 
     if (currentUserIndex !== -1) {
-      const updatedUser: UserDTO = {
-        ...this.users[currentUserIndex],
-        isDeleted: true,
-      };
+      this.users[currentUserIndex].isDeleted = true;
 
-      this.users[currentUserIndex] = updatedUser;
-
-      return updatedUser;
+      return this.users[currentUserIndex];
     }
 
     return;

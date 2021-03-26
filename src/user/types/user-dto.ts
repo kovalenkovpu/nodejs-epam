@@ -1,3 +1,4 @@
+// TODO: if time allowes - use "UserBase" here
 interface User {
   login: string;
   password: string;

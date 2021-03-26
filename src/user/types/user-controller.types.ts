@@ -15,7 +15,7 @@ interface IUserController {
   getAll: (req: Request, res: Response<UserDTO[]>) => void;
 
   getAutoSuggestUsers: (
-    req: Request<any, UserDTO[], any, AutosuggestUsersQueryParams>,
+    req: Request<any, UserDTO[], undefined, AutosuggestUsersQueryParams>,
     res: Response<UserDTO[]>
   ) => void;
 

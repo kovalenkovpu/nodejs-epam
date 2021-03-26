@@ -12,17 +12,17 @@ userRouter.get('/search', userController.getAutoSuggestUsers);
 userRouter.get('/:id', userController.getOne);
 
 userRouter.post(
-	'/',
-	userValidationMiddleware.validateUser,
-	userValidationMiddleware.validateUserUnique,
-	userController.create
+  '/',
+  userValidationMiddleware.validateUser,
+  userValidationMiddleware.validateUserUnique,
+  userController.create
 );
 
 userRouter.put(
-	'/:id',
-	userValidationMiddleware.validateUser,
-	userValidationMiddleware.validateUserUnique,
-	userController.update
+  '/:id',
+  userValidationMiddleware.validateUser,
+  userValidationMiddleware.validateUserUnique,
+  userController.update
 );
 
 userRouter.delete('/:id', userController.delete);

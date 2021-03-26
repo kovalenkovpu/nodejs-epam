@@ -6,72 +6,74 @@ import { IUserService } from './types/user-service.types';
 import { User, UserDTO, UserId } from './types/user-dto';
 
 class UserService implements IUserService {
-	private users: UserDTO[] = [];
+  private users: UserDTO[] = [];
 
-	getAll = () => this.users;
+  getAll = () => this.users;
 
-	getAutoSuggestUsers = (
-		loginSubstring: string | undefined = '',
-		limit: string | undefined
-	) => {
-		// "limit" might be not provided - return all users
-		const safeLimit = isEmpty(limit) ? this.users.length : Number(limit);
-		const filteredUsers = this.users.filter(({ login }) =>
-			login.includes(loginSubstring)
-		);
+  getAutoSuggestUsers = (
+    loginSubstring: string | undefined = '',
+    limit: string | undefined
+  ) => {
+    // "limit" might be not provided - return all users
+    const safeLimit = isEmpty(limit) ? this.users.length : Number(limit);
+    const filteredUsers = this.users.filter(({ login }) =>
+      login.includes(loginSubstring)
+    );
 
-		const sortedUsers = sortBy(filteredUsers, ['login']);
+    const sortedUsers = sortBy(filteredUsers, ['login']);
 
-		return sortedUsers.slice(0, safeLimit);
-	};
+    return sortedUsers.slice(0, safeLimit);
+  };
 
-	getOne = (id: UserId) => this.users.find((user) => id === user.id);
+  getOne = (id: UserId) => this.users.find((user) => id === user.id);
 
-	create = (user: User) => {
-		const newUser: UserDTO = {
-			...user,
-			id: uuidv4(),
-			isDeleted: false,
-		};
+  create = (user: User) => {
+    const newUser: UserDTO = {
+      ...user,
+      id: uuidv4(),
+      isDeleted: false,
+    };
 
-		this.users.push(newUser);
+    this.users.push(newUser);
 
-		return newUser;
-	};
+    return newUser;
+  };
 
-	update = (id: UserId, user: User) => {
-		const currentUserIndex = this.users.findIndex((user) => id === user.id);
+  update = (id: UserId, user: User) => {
+    const currentUserIndex = this.users.findIndex(
+      (currentUser) => id === currentUser.id
+    );
 
-		if (currentUserIndex !== -1) {
-			const updatedUser: UserDTO = {
-				...this.users[currentUserIndex],
-				...user,
-			};
+    if (currentUserIndex !== -1) {
+      const updatedUser: UserDTO = {
+        ...this.users[currentUserIndex],
+        ...user,
+      };
 
-			this.users[currentUserIndex] = updatedUser;
+      this.users[currentUserIndex] = updatedUser;
 
-			return updatedUser;
-		}
+      return updatedUser;
+    }
 
-		return;
-	};
+    return;
+  };
 
-	delete = (id: UserId) => {
-		const currentUserIndex = this.users.findIndex((user) => id === user.id);
+  delete = (id: UserId) => {
+    const currentUserIndex = this.users.findIndex((user) => id === user.id);
 
-		if (currentUserIndex !== -1) {
-			const updatedUser: UserDTO = {
-				...this.users[currentUserIndex],
-				isDeleted: true,
-			};
+    if (currentUserIndex !== -1) {
+      const updatedUser: UserDTO = {
+        ...this.users[currentUserIndex],
+        isDeleted: true,
+      };
 
-			this.users[currentUserIndex] = updatedUser;
+      this.users[currentUserIndex] = updatedUser;
 
-			return updatedUser;
-		}
+      return updatedUser;
+    }
 
-		return;
-	};
+    return;
+  };
 }
 
 const userService = new UserService();

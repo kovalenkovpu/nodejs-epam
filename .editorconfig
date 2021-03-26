@@ -1,7 +1,7 @@
 [*]
 charset = utf-8
 indent_size = 2
-indent_style = tab
+indent_style = spaces
 insert_final_newline = true
 trim_trailing_whitespace = true
 quote_type = single

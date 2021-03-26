@@ -1,5 +1,3 @@
-import { Request, Response } from 'express';
-
 import { User, UserDTO, UserId } from './user-dto';
 
 interface IUserService {

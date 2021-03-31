@@ -7,6 +7,11 @@ interface AutosuggestUsersQueryParams {
   limit?: string;
 }
 
+interface AutosuggestUsersResponse {
+  totalCount: number;
+  users: UserDTO[];
+}
+
 interface UserParams {
   id: UserId;
 }
@@ -15,8 +20,13 @@ interface IUserController {
   getAll: (req: Request, res: Response<UserDTO[]>) => void;
 
   getAutoSuggestUsers: (
-    req: Request<any, UserDTO[], undefined, AutosuggestUsersQueryParams>,
-    res: Response<UserDTO[]>
+    req: Request<
+      any,
+      AutosuggestUsersResponse,
+      undefined,
+      AutosuggestUsersQueryParams
+    >,
+    res: Response<AutosuggestUsersResponse>
   ) => void;
 
   getOne: (
@@ -37,4 +47,9 @@ interface IUserController {
   ) => void | Response<string>;
 }
 
-export type { IUserController, AutosuggestUsersQueryParams, UserParams };
+export type {
+  IUserController,
+  AutosuggestUsersQueryParams,
+  AutosuggestUsersResponse,
+  UserParams,
+};

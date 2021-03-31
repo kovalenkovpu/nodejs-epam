@@ -4,12 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { IUserService } from './types/user-service.types';
 import { User, UserDTO, UserId } from './types/user-dto';
+import { AutosuggestUsersResponse } from './types/user-controller.types';
 
 class UserService implements IUserService {
   private users: UserDTO[] = [];
 
-  // TODO: it's not clear whether to return utility fields, e.g.: "isDeleted"
-  // Seems not, but not implemented for now.
+  get usersWithoutDeleted() {
+    return this.users.filter(({ isDeleted }) => !isDeleted);
+  }
+
   getAll = () => this.users;
 
   getAutoSuggestUsers = (
@@ -17,17 +20,28 @@ class UserService implements IUserService {
     limit: string | undefined
   ) => {
     // "limit" might be not provided - return all users
-    const safeLimit = isEmpty(limit) ? this.users.length : Number(limit);
-    const filteredUsers = this.users.filter(({ login }) =>
+    const safeLimit = isEmpty(limit)
+      ? this.usersWithoutDeleted.length
+      : Number(limit);
+
+    // Filter users by their "login", sort them by the "login"
+    const filteredUsers = this.usersWithoutDeleted.filter(({ login }) =>
       login.includes(loginSubstring)
     );
-
     const sortedUsers = sortBy(filteredUsers, ['login']);
 
-    return sortedUsers.slice(0, safeLimit);
+    // Return "totalCount" to indicate how many results there're regardless
+    // of the "limit" in request - FE convenience
+    const autosuggestedUsers: AutosuggestUsersResponse = {
+      totalCount: sortedUsers.length,
+      users: sortedUsers.slice(0, safeLimit),
+    };
+
+    return autosuggestedUsers;
   };
 
-  getOne = (id: UserId) => this.users.find((user) => id === user.id);
+  getOne = (id: UserId) =>
+    this.usersWithoutDeleted.find((user) => id === user.id);
 
   create = (user: User) => {
     const newUser: UserDTO = {
@@ -46,7 +60,7 @@ class UserService implements IUserService {
       (currentUser) => id === currentUser.id
     );
 
-    if (currentUserIndex !== -1) {
+    if (currentUserIndex !== -1 && !this.users[currentUserIndex].isDeleted) {
       const updatedUser: UserDTO = {
         ...this.users[currentUserIndex],
         ...user,
@@ -63,7 +77,7 @@ class UserService implements IUserService {
   delete = (id: UserId) => {
     const currentUserIndex = this.users.findIndex((user) => id === user.id);
 
-    if (currentUserIndex !== -1) {
+    if (currentUserIndex !== -1 && !this.users[currentUserIndex].isDeleted) {
       this.users[currentUserIndex].isDeleted = true;
 
       return this.users[currentUserIndex];

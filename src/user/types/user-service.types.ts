@@ -1,12 +1,15 @@
+import { AutosuggestUsersResponse } from './user-controller.types';
 import { User, UserDTO, UserId } from './user-dto';
 
 interface IUserService {
+  usersWithoutDeleted: UserDTO[];
+
   getAll: () => UserDTO[];
 
   getAutoSuggestUsers: (
     loginSubstring: string | undefined,
     limit: string | undefined
-  ) => UserDTO[];
+  ) => AutosuggestUsersResponse;
 
   getOne: (id: UserId) => UserDTO | undefined;
 

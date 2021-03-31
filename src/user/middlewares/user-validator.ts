@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'joi';
+import last from 'lodash/last';
 
 import { FormatterValidationError } from './types/user-validator.types';
 import { User, UserDTO } from '../types/user-dto';
@@ -14,7 +15,7 @@ const formatError = ({ details }: ValidationError) =>
   }));
 
 const validateUser = async (
-  req: Request<UserParams | any, UserDTO, User>,
+  req: Request<any, UserDTO, User>,
   // TODO: find out the way to type it properly
   res: Response,
   next: NextFunction
@@ -22,7 +23,13 @@ const validateUser = async (
   try {
     const { body: newUser } = req;
 
-    await userSchema.validateAsync(newUser, { abortEarly: false });
+    const validatedUser: User = await userSchema.validateAsync(newUser, {
+      abortEarly: false,
+    });
+
+    // If data is validated properly - we should proceed with that validated
+    // data to make joi's "trim" work
+    req.body = validatedUser;
 
     return next();
   } catch (error) {
@@ -38,11 +45,18 @@ const validateUserUnique = async (
 ): Promise<void> => {
   try {
     const { body: newUser } = req;
-    const existingUsers = userService.getAll();
+    const existingUsers = userService.usersWithoutDeleted;
 
-    await userLoginSchema.validateAsync([...existingUsers, newUser], {
-      abortEarly: false,
-    });
+    const validatedUser: User[] = await userLoginSchema.validateAsync(
+      [...existingUsers, newUser],
+      { abortEarly: false }
+    );
+
+    // If data is validated properly - we should proceed with that validated
+    // data to make joi's "trim" work.
+    // We're also sure there's always last element
+    // in the validation result array
+    req.body = last(validatedUser) as User;
 
     return next();
   } catch (error) {

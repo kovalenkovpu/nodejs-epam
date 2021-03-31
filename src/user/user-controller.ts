@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 
 import {
   AutosuggestUsersQueryParams,
+  AutosuggestUsersResponse,
   IUserController,
   UserParams,
 } from './types/user-controller.types';
@@ -14,25 +15,30 @@ class UserController implements IUserController {
 
   getAll = (req: Request, res: Response<UserDTO[]>) => {
     try {
-      res.send(userService.getAll());
+      res.send(userService.usersWithoutDeleted);
     } catch (error) {
       res.status(500).json(error);
     }
   };
 
   getAutoSuggestUsers = (
-    req: Request<any, UserDTO[], undefined, AutosuggestUsersQueryParams>,
-    res: Response<UserDTO[]>
+    req: Request<
+      any,
+      AutosuggestUsersResponse,
+      undefined,
+      AutosuggestUsersQueryParams
+    >,
+    res: Response<AutosuggestUsersResponse>
   ) => {
     try {
       const { loginSubstring, limit } = req.query;
 
-      const suggestedUsers = userService.getAutoSuggestUsers(
+      const autosuggestedUsers = userService.getAutoSuggestUsers(
         loginSubstring,
         limit
       );
 
-      res.send(suggestedUsers);
+      res.send(autosuggestedUsers);
     } catch (error) {
       res.status(500).json(error);
     }

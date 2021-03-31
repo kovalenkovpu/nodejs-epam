@@ -5,7 +5,7 @@ import { userController } from './user-controller';
 
 const userRouter = express.Router();
 
-userRouter.get('/all', userController.getAll);
+userRouter.get('/', userController.getAll);
 
 userRouter.get('/search', userController.getAutoSuggestUsers);
 

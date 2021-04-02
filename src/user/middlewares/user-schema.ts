@@ -1,8 +1,8 @@
 import Joi from 'joi';
 
-import { User } from './types/user-dto';
+import { UserBase } from '../types/user-dto';
 
-const userSchema = Joi.object<User>({
+const userSchema = Joi.object<UserBase>({
   login: Joi.string().trim().required(),
   password: Joi.string()
     .alphanum()

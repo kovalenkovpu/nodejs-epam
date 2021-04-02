@@ -3,19 +3,30 @@ import { Request, Response } from 'express';
 import {
   AutosuggestUsersQueryParams,
   AutosuggestUsersResponse,
+  GetAllUsersQueryParams,
   IUserController,
   UserParams,
+  WITH_ALL_USERS,
 } from './types/user-controller.types';
-import { User, UserDTO } from './types/user-dto';
+import { UserBase, User, UserDTO } from './types/user-dto';
 import { userService } from './user-service';
 
 class UserController implements IUserController {
   private generateNotFoundMessage = (id: string) =>
     `User with id: ${id} not found`;
 
-  getAll = (req: Request, res: Response<UserDTO[]>) => {
+  getAll = (
+    req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
+    res: Response<User[] | UserDTO[]>
+  ) => {
     try {
-      res.send(userService.usersWithoutDeleted);
+      const { withAllUsers } = req.query;
+
+      if (withAllUsers === WITH_ALL_USERS) {
+        res.send(userService.userDTOsWithDeleted);
+      }
+
+      res.send(userService.getAll());
     } catch (error) {
       res.status(500).json(error);
     }
@@ -44,7 +55,7 @@ class UserController implements IUserController {
     }
   };
 
-  getOne = (req: Request<UserParams>, res: Response<UserDTO | string>) => {
+  getOne = (req: Request<UserParams>, res: Response<User | string>) => {
     try {
       const { id } = req.params;
       const currentUser = userService.getOne(id);
@@ -61,7 +72,7 @@ class UserController implements IUserController {
     }
   };
 
-  create = (req: Request<any, UserDTO, User>, res: Response<UserDTO>) => {
+  create = (req: Request<any, User, UserBase>, res: Response<User>) => {
     try {
       const user = userService.create(req.body);
 
@@ -72,8 +83,8 @@ class UserController implements IUserController {
   };
 
   update = (
-    req: Request<UserParams, UserDTO, User>,
-    res: Response<UserDTO | string>
+    req: Request<UserParams, User, UserBase>,
+    res: Response<User | string>
   ) => {
     try {
       const {
@@ -95,7 +106,7 @@ class UserController implements IUserController {
     }
   };
 
-  delete = (req: Request<UserParams>, res: Response<UserDTO | string>) => {
+  delete = (req: Request<UserParams>, res: Response<User | string>) => {
     try {
       const { id } = req.params;
       const deletedUser = userService.delete(id);

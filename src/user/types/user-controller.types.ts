@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 
-import { User, UserDTO, UserId } from './user-dto';
+import { UserBase, User, UserDTO, UserId } from './user-dto';
+
+const WITH_ALL_USERS = 'true' as const;
+
+interface GetAllUsersQueryParams {
+  withAllUsers?: typeof WITH_ALL_USERS;
+}
 
 interface AutosuggestUsersQueryParams {
   loginSubstring?: string;
@@ -9,7 +15,7 @@ interface AutosuggestUsersQueryParams {
 
 interface AutosuggestUsersResponse {
   totalCount: number;
-  users: UserDTO[];
+  users: User[];
 }
 
 interface UserParams {
@@ -17,7 +23,10 @@ interface UserParams {
 }
 
 interface IUserController {
-  getAll: (req: Request, res: Response<UserDTO[]>) => void;
+  getAll: (
+    req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
+    res: Response<User[]>
+  ) => void;
 
   getAutoSuggestUsers: (
     req: Request<
@@ -31,24 +40,27 @@ interface IUserController {
 
   getOne: (
     req: Request<UserParams>,
-    res: Response<UserDTO | string>
+    res: Response<User | string>
   ) => void | Response<string>;
 
-  create: (req: Request<any, UserDTO, User>, res: Response<UserDTO>) => void;
+  create: (req: Request<any, User, UserBase>, res: Response<User>) => void;
 
   update: (
-    req: Request<UserParams, UserDTO, User>,
-    res: Response<UserDTO | string>
+    req: Request<UserParams, User, UserBase>,
+    res: Response<User | string>
   ) => void | Response<string>;
 
   delete: (
     req: Request<UserParams>,
-    res: Response<UserDTO | string>
+    res: Response<User | string>
   ) => void | Response<string>;
 }
 
+export { WITH_ALL_USERS };
+
 export type {
   IUserController,
+  GetAllUsersQueryParams,
   AutosuggestUsersQueryParams,
   AutosuggestUsersResponse,
   UserParams,

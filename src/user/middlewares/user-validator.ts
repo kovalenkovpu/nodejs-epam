@@ -3,8 +3,8 @@ import { ValidationError } from 'joi';
 import last from 'lodash/last';
 
 import { FormatterValidationError } from './types/user-validator.types';
-import { User, UserDTO } from '../types/user-dto';
-import { userLoginSchema, userSchema } from '../user-schema';
+import { UserBase } from '../types/user-dto';
+import { userLoginSchema, userSchema } from './user-schema';
 import { userService } from '../user-service';
 import { UserParams } from '../types/user-controller.types';
 
@@ -15,7 +15,7 @@ const formatError = ({ details }: ValidationError) =>
   }));
 
 const validateUser = async (
-  req: Request<any, UserDTO, User>,
+  req: Request<any, UserBase, UserBase>,
   // TODO: find out the way to type it properly
   res: Response,
   next: NextFunction
@@ -23,7 +23,7 @@ const validateUser = async (
   try {
     const { body: newUser } = req;
 
-    const validatedUser: User = await userSchema.validateAsync(newUser, {
+    const validatedUser: UserBase = await userSchema.validateAsync(newUser, {
       abortEarly: false,
     });
 
@@ -38,16 +38,16 @@ const validateUser = async (
 };
 
 const validateUserUnique = async (
-  req: Request<UserParams, UserDTO, User>,
+  req: Request<UserParams, UserBase, UserBase>,
   // TODO: find out the way to type it properly
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { body: newUser } = req;
-    const existingUsers = userService.usersWithoutDeleted;
+    const existingUsers = userService.userDTOsWithoutDeleted;
 
-    const validatedUser: User[] = await userLoginSchema.validateAsync(
+    const validatedUser: UserBase[] = await userLoginSchema.validateAsync(
       [...existingUsers, newUser],
       { abortEarly: false }
     );
@@ -56,7 +56,7 @@ const validateUserUnique = async (
     // data to make joi's "trim" work.
     // We're also sure there's always last element
     // in the validation result array
-    req.body = last(validatedUser) as User;
+    req.body = last(validatedUser) as UserBase;
 
     return next();
   } catch (error) {

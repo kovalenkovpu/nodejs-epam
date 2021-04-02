@@ -1,5 +1,5 @@
-// TODO: if time allows - use "UserBase" here
-interface User {
+// Receive from FE
+interface UserBase {
   login: string;
   password: string;
   age: number;
@@ -7,9 +7,13 @@ interface User {
 
 type UserId = string;
 
-interface UserDTO extends User {
+// Work internally on BE
+interface UserDTO extends UserBase {
   id: UserId;
   isDeleted: boolean;
 }
 
-export type { User, UserDTO, UserId };
+// Send to FE
+type User = Omit<UserDTO, 'isDeleted'>;
+
+export type { UserBase, UserDTO, User, UserId };

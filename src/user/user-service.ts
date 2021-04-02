@@ -1,31 +1,41 @@
 import isEmpty from 'lodash/isEmpty';
 import sortBy from 'lodash/sortBy';
+import omit from 'lodash/omit';
 import { v4 as uuidv4 } from 'uuid';
 
 import { IUserService } from './types/user-service.types';
-import { User, UserDTO, UserId } from './types/user-dto';
+import { UserBase, UserDTO, User, UserId } from './types/user-dto';
 import { AutosuggestUsersResponse } from './types/user-controller.types';
 
 class UserService implements IUserService {
-  private users: UserDTO[] = [];
+  private _users: UserDTO[] = [];
 
-  get usersWithoutDeleted() {
-    return this.users.filter(({ isDeleted }) => !isDeleted);
+  get userDTOsWithDeleted() {
+    return this._users;
   }
 
-  getAll = () => this.users;
+  get userDTOsWithoutDeleted() {
+    return this._users.filter(({ isDeleted }) => !isDeleted);
+  }
+
+  getUserFromUserDTO = (userDTO: UserDTO) => omit(userDTO, ['isDeleted']);
+
+  getUsers(users: UserDTO[]): User[] {
+    return users.map(({ isDeleted, ...user }) => user);
+  }
+
+  getAll = () => this.getUsers(this.userDTOsWithoutDeleted);
 
   getAutoSuggestUsers = (
     loginSubstring: string | undefined = '',
     limit: string | undefined
   ) => {
+    const users = this.getAll();
     // "limit" might be not provided - return all users
-    const safeLimit = isEmpty(limit)
-      ? this.usersWithoutDeleted.length
-      : Number(limit);
+    const safeLimit = isEmpty(limit) ? users.length : Number(limit);
 
     // Filter users by their "login", sort them by the "login"
-    const filteredUsers = this.usersWithoutDeleted.filter(({ login }) =>
+    const filteredUsers = users.filter(({ login }) =>
       login.includes(loginSubstring)
     );
     const sortedUsers = sortBy(filteredUsers, ['login']);
@@ -40,47 +50,46 @@ class UserService implements IUserService {
     return autosuggestedUsers;
   };
 
-  getOne = (id: UserId) =>
-    this.usersWithoutDeleted.find((user) => id === user.id);
+  getOne = (id: UserId) => this.getAll().find((user) => id === user.id);
 
-  create = (user: User) => {
+  create = (userData: UserBase) => {
     const newUser: UserDTO = {
-      ...user,
+      ...userData,
       id: uuidv4(),
       isDeleted: false,
     };
 
-    this.users.push(newUser);
+    this._users.push(newUser);
 
-    return newUser;
+    return this.getUserFromUserDTO(newUser);
   };
 
-  update = (id: UserId, user: User) => {
-    const currentUserIndex = this.users.findIndex(
+  update = (id: UserId, userData: UserBase) => {
+    const currentUserIndex = this._users.findIndex(
       (currentUser) => id === currentUser.id
     );
 
-    if (currentUserIndex !== -1 && !this.users[currentUserIndex].isDeleted) {
+    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
       const updatedUser: UserDTO = {
-        ...this.users[currentUserIndex],
-        ...user,
+        ...this._users[currentUserIndex],
+        ...userData,
       };
 
-      this.users[currentUserIndex] = updatedUser;
+      this._users[currentUserIndex] = updatedUser;
 
-      return updatedUser;
+      return this.getUserFromUserDTO(updatedUser);
     }
 
     return;
   };
 
   delete = (id: UserId) => {
-    const currentUserIndex = this.users.findIndex((user) => id === user.id);
+    const currentUserIndex = this._users.findIndex((user) => id === user.id);
 
-    if (currentUserIndex !== -1 && !this.users[currentUserIndex].isDeleted) {
-      this.users[currentUserIndex].isDeleted = true;
+    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
+      this._users[currentUserIndex].isDeleted = true;
 
-      return this.users[currentUserIndex];
+      return this.getUserFromUserDTO(this._users[currentUserIndex]);
     }
 
     return;

@@ -1,23 +1,28 @@
 import { AutosuggestUsersResponse } from './user-controller.types';
-import { User, UserDTO, UserId } from './user-dto';
+import { UserBase, User, UserDTO, UserId } from './user-dto';
 
 interface IUserService {
-  usersWithoutDeleted: UserDTO[];
+  userDTOsWithDeleted: UserDTO[];
+  userDTOsWithoutDeleted: UserDTO[];
 
-  getAll: () => UserDTO[];
+  getUserFromUserDTO: (userDTO: UserDTO) => User;
+
+  getUsers: (userDTOs: UserDTO[]) => User[];
+
+  getAll: () => User[];
 
   getAutoSuggestUsers: (
     loginSubstring: string | undefined,
     limit: string | undefined
   ) => AutosuggestUsersResponse;
 
-  getOne: (id: UserId) => UserDTO | undefined;
+  getOne: (id: UserId) => User | undefined;
 
-  create: (user: User) => UserDTO | undefined;
+  create: (user: UserBase) => User | undefined;
 
-  update: (id: UserId, user: User) => UserDTO | undefined;
+  update: (id: UserId, user: UserBase) => User | undefined;
 
-  delete: (id: UserId) => UserDTO | undefined;
+  delete: (id: UserId) => User | undefined;
 }
 
 export type { IUserService };

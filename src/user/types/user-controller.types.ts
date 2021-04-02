@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 
 import { UserBase, User, UserDTO, UserId } from './user-dto';
 
-const WITH_ALL_USERS = 'true' as const;
+const WITH_COMPLETE_DATA = 'true' as const;
 
 interface GetAllUsersQueryParams {
-  withAllUsers?: typeof WITH_ALL_USERS;
+  withCompleteData?: typeof WITH_COMPLETE_DATA;
 }
 
 interface AutosuggestUsersQueryParams {
@@ -56,7 +56,7 @@ interface IUserController {
   ) => void | Response<string>;
 }
 
-export { WITH_ALL_USERS };
+export { WITH_COMPLETE_DATA };
 
 export type {
   IUserController,

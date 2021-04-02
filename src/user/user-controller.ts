@@ -6,7 +6,7 @@ import {
   GetAllUsersQueryParams,
   IUserController,
   UserParams,
-  WITH_ALL_USERS,
+  WITH_COMPLETE_DATA,
 } from './types/user-controller.types';
 import { UserBase, User, UserDTO } from './types/user-dto';
 import { userService } from './user-service';
@@ -20,9 +20,9 @@ class UserController implements IUserController {
     res: Response<User[] | UserDTO[]>
   ) => {
     try {
-      const { withAllUsers } = req.query;
+      const { withCompleteData } = req.query;
 
-      if (withAllUsers === WITH_ALL_USERS) {
+      if (withCompleteData === WITH_COMPLETE_DATA) {
         res.send(userService.userDTOsWithDeleted);
       }
 

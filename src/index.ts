@@ -1,13 +1,18 @@
 import express from 'express';
+import process from 'process';
+import dotenv from 'dotenv';
 
 // Routers
 import { userRouter } from './user/user-router';
 
+dotenv.config();
+
 const app = express();
-const PORT = 8080;
 
 app.use(express.json());
 app.use('/api/user', userRouter);
 
-// eslint-disable-next-line no-undef
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(process.env.PORT, () =>
+  // eslint-disable-next-line no-undef
+  console.log(`Server is running on port ${process.env.PORT}`)
+);

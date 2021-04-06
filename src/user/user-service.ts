@@ -1,36 +1,47 @@
 import isEmpty from 'lodash/isEmpty';
 import sortBy from 'lodash/sortBy';
 import omit from 'lodash/omit';
-import { v4 as uuidv4 } from 'uuid';
 
 import { IUserService } from './types/user-service.types';
 import { UserBase, UserDTO, User, UserId } from './types/user-dto';
 import { AutosuggestUsersResponse } from './types/user-controller.types';
+import { IUserModel } from './types/user-model.types';
+import { userModel as userModelInstance } from './user-model';
 
 class UserService implements IUserService {
-  private _users: UserDTO[] = [];
+  userModel: IUserModel;
 
-  get userDTOsWithDeleted() {
-    return this._users;
+  constructor(userModel: IUserModel) {
+    this.userModel = userModel;
   }
 
-  get userDTOsWithoutDeleted() {
-    return this._users.filter(({ isDeleted }) => !isDeleted);
-  }
+  private getUserDTOsWithoutDeleted = (userDTOs: UserDTO[]) =>
+    userDTOs.filter(({ isDeleted }) => !isDeleted);
 
-  getUserFromUserDTO = (userDTO: UserDTO) => omit(userDTO, ['isDeleted']);
+  private getUserFromUserDTO = (userDTO: UserDTO): User =>
+    omit(userDTO, ['isDeleted']);
 
-  getUsers(users: UserDTO[]): User[] {
-    return users.map(({ isDeleted, ...user }) => user);
-  }
+  private getUsersFromUserDTOs = (userDTOs: UserDTO[]) =>
+    userDTOs.map<User>(this.getUserFromUserDTO);
 
-  getAll = () => this.getUsers(this.userDTOsWithoutDeleted);
+  getAllWithCompleteData = () => this.userModel.getAll();
 
-  getAutoSuggestUsers = (
+  getAll = async () => {
+    const allUsers = await this.userModel.getAll();
+    const allUsersWithoutDeleted = this.getUserDTOsWithoutDeleted(allUsers);
+    const users = this.getUsersFromUserDTOs(allUsersWithoutDeleted);
+
+    return users;
+  };
+
+  getAutoSuggestUsers = async (
     loginSubstring: string | undefined = '',
     limit: string | undefined
   ) => {
-    const users = this.getAll();
+    const userDTOs = await this.userModel.getAll();
+    const userDTOsWithoutDeleted = this.getUserDTOsWithoutDeleted(userDTOs);
+    const users = this.getUsersFromUserDTOs(userDTOsWithoutDeleted);
+
     // "limit" might be not provided - return all users
     const safeLimit = isEmpty(limit) ? users.length : Number(limit);
 
@@ -50,52 +61,37 @@ class UserService implements IUserService {
     return autosuggestedUsers;
   };
 
-  getOne = (id: UserId) => this.getAll().find((user) => id === user.id);
+  getOne = async (id: UserId) => {
+    const user = await this.userModel.getOne(id);
 
-  create = (userData: UserBase) => {
-    const newUser: UserDTO = {
-      ...userData,
-      id: uuidv4(),
-      isDeleted: false,
-    };
+    if (user && !user.isDeleted) {
+      return this.getUserFromUserDTO(user);
+    }
+  };
 
-    this._users.push(newUser);
+  create = async (userData: UserBase) => {
+    const newUser = await this.userModel.create(userData);
 
     return this.getUserFromUserDTO(newUser);
   };
 
-  update = (id: UserId, userData: UserBase) => {
-    const currentUserIndex = this._users.findIndex(
-      (currentUser) => id === currentUser.id
-    );
+  update = async (id: UserId, userData: UserBase) => {
+    const updatedUser = await this.userModel.update(id, userData);
 
-    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
-      const updatedUser: UserDTO = {
-        ...this._users[currentUserIndex],
-        ...userData,
-      };
-
-      this._users[currentUserIndex] = updatedUser;
-
+    if (updatedUser) {
       return this.getUserFromUserDTO(updatedUser);
     }
-
-    return;
   };
 
-  delete = (id: UserId) => {
-    const currentUserIndex = this._users.findIndex((user) => id === user.id);
+  delete = async (id: UserId) => {
+    const deletedUser = await this.userModel.delete(id);
 
-    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
-      this._users[currentUserIndex].isDeleted = true;
-
-      return this.getUserFromUserDTO(this._users[currentUserIndex]);
+    if (deletedUser) {
+      return this.getUserFromUserDTO(deletedUser);
     }
-
-    return;
   };
 }
 
-const userService = new UserService();
+const userService = new UserService(userModelInstance);
 
 export { userService };

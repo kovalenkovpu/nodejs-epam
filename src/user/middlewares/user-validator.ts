@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'joi';
 import last from 'lodash/last';
+import find from 'lodash/find';
 
 import { FormatterValidationError } from './types/user-validator.types';
-import { UserBase } from '../types/user-dto';
+import { User, UserBase } from '../types/user-dto';
 import { userLoginSchema, userSchema } from './user-schema';
 import { userService } from '../user-service';
 import { UserParams } from '../types/user-controller.types';
@@ -37,17 +38,16 @@ const validateUser = async (
   }
 };
 
-const validateUserUnique = async (
-  req: Request<UserParams, UserBase, UserBase>,
-  // TODO: find out the way to type it properly
+const validateUserUniqueCreate = async (
+  req: Request<any, UserBase, UserBase>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { body: newUser } = req;
-    const existingUsers = userService.userDTOsWithoutDeleted;
+    const existingUsers = await userService.getAll();
 
-    const validatedUser: UserBase[] = await userLoginSchema.validateAsync(
+    const validatedUsers = await userLoginSchema.validateAsync(
       [...existingUsers, newUser],
       { abortEarly: false }
     );
@@ -56,7 +56,7 @@ const validateUserUnique = async (
     // data to make joi's "trim" work.
     // We're also sure there's always last element
     // in the validation result array
-    req.body = last(validatedUser) as UserBase;
+    req.body = last(validatedUsers) as UserBase;
 
     return next();
   } catch (error) {
@@ -64,4 +64,41 @@ const validateUserUnique = async (
   }
 };
 
-export { validateUser, validateUserUnique };
+const validateUserUniqueUpdate = async (
+  req: Request<UserParams, User, UserBase>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      body: newUser,
+      params: { id },
+    } = req;
+    let existingUsers = await userService.getAll();
+    const existingUser = find(existingUsers, { id });
+
+    if (!existingUser) {
+      return next();
+    }
+
+    const userToUpdate: User = {
+      ...existingUser,
+      ...newUser,
+    };
+
+    existingUsers = existingUsers.filter((user) => user.id !== id);
+
+    const validatedUsers = await userLoginSchema.validateAsync(
+      [...existingUsers, userToUpdate],
+      { abortEarly: false }
+    );
+
+    req.body = last(validatedUsers) as User;
+
+    return next();
+  } catch (error) {
+    res.status(400).json(formatError(error));
+  }
+};
+
+export { validateUser, validateUserUniqueCreate, validateUserUniqueUpdate };

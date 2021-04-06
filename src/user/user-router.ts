@@ -14,14 +14,14 @@ userRouter.get('/:id', userController.getOne);
 userRouter.post(
   '/',
   userValidationMiddleware.validateUser,
-  userValidationMiddleware.validateUserUnique,
+  userValidationMiddleware.validateUserUniqueCreate,
   userController.create
 );
 
 userRouter.put(
   '/:id',
   userValidationMiddleware.validateUser,
-  userValidationMiddleware.validateUserUnique,
+  userValidationMiddleware.validateUserUniqueUpdate,
   userController.update
 );
 

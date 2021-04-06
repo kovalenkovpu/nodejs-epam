@@ -26,7 +26,7 @@ interface IUserController {
   getAll: (
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[]>
-  ) => void;
+  ) => Promise<void>;
 
   getAutoSuggestUsers: (
     req: Request<
@@ -36,24 +36,27 @@ interface IUserController {
       AutosuggestUsersQueryParams
     >,
     res: Response<AutosuggestUsersResponse>
-  ) => void;
+  ) => Promise<void>;
 
   getOne: (
     req: Request<UserParams>,
     res: Response<User | string>
-  ) => void | Response<string>;
+  ) => Promise<void | Response<string>>;
 
-  create: (req: Request<any, User, UserBase>, res: Response<User>) => void;
+  create: (
+    req: Request<any, User, UserBase>,
+    res: Response<User>
+  ) => Promise<void>;
 
   update: (
     req: Request<UserParams, User, UserBase>,
     res: Response<User | string>
-  ) => void | Response<string>;
+  ) => Promise<void | Response<string>>;
 
   delete: (
     req: Request<UserParams>,
     res: Response<User | string>
-  ) => void | Response<string>;
+  ) => Promise<void | Response<string>>;
 }
 
 export { WITH_COMPLETE_DATA };

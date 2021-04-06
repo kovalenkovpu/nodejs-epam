@@ -15,24 +15,27 @@ class UserController implements IUserController {
   private generateNotFoundMessage = (id: string) =>
     `User with id: ${id} not found`;
 
-  getAll = (
+  getAll = async (
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[] | UserDTO[]>
   ) => {
     try {
+      let users: User[];
       const { withCompleteData } = req.query;
 
       if (withCompleteData === WITH_COMPLETE_DATA) {
-        res.send(userService.userDTOsWithDeleted);
+        users = await userService.getAllWithCompleteData();
+      } else {
+        users = await userService.getAll();
       }
 
-      res.send(userService.getAll());
+      res.send(users);
     } catch (error) {
       res.status(500).json(error);
     }
   };
 
-  getAutoSuggestUsers = (
+  getAutoSuggestUsers = async (
     req: Request<
       any,
       AutosuggestUsersResponse,
@@ -44,7 +47,7 @@ class UserController implements IUserController {
     try {
       const { loginSubstring, limit } = req.query;
 
-      const autosuggestedUsers = userService.getAutoSuggestUsers(
+      const autosuggestedUsers = await userService.getAutoSuggestUsers(
         loginSubstring,
         limit
       );
@@ -55,10 +58,10 @@ class UserController implements IUserController {
     }
   };
 
-  getOne = (req: Request<UserParams>, res: Response<User | string>) => {
+  getOne = async (req: Request<UserParams>, res: Response<User | string>) => {
     try {
       const { id } = req.params;
-      const currentUser = userService.getOne(id);
+      const currentUser = await userService.getOne(id);
 
       if (!currentUser) {
         const errorMessage = this.generateNotFoundMessage(id);
@@ -72,9 +75,9 @@ class UserController implements IUserController {
     }
   };
 
-  create = (req: Request<any, User, UserBase>, res: Response<User>) => {
+  create = async (req: Request<any, User, UserBase>, res: Response<User>) => {
     try {
-      const user = userService.create(req.body);
+      const user = await userService.create(req.body);
 
       res.send(user);
     } catch (error) {
@@ -82,7 +85,7 @@ class UserController implements IUserController {
     }
   };
 
-  update = (
+  update = async (
     req: Request<UserParams, User, UserBase>,
     res: Response<User | string>
   ) => {
@@ -92,7 +95,7 @@ class UserController implements IUserController {
         body: userData,
       } = req;
 
-      const updatedUser = userService.update(id, userData);
+      const updatedUser = await userService.update(id, userData);
 
       if (!updatedUser) {
         const errorMessage = this.generateNotFoundMessage(id);
@@ -106,10 +109,10 @@ class UserController implements IUserController {
     }
   };
 
-  delete = (req: Request<UserParams>, res: Response<User | string>) => {
+  delete = async (req: Request<UserParams>, res: Response<User | string>) => {
     try {
       const { id } = req.params;
-      const deletedUser = userService.delete(id);
+      const deletedUser = await userService.delete(id);
 
       if (!deletedUser) {
         const errorMessage = this.generateNotFoundMessage(id);

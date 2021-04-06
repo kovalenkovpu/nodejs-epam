@@ -13,7 +13,7 @@
     "build": "tsc --build",
     "tslint": "tsc --noEmit",
     "lint": "eslint --ext .ts src --color",
-    "lint-all": "npm run tslint & npm run lint"
+    "lint:all": "npm run tslint & npm run lint"
   },
   "license": "ISC",
   "devDependencies": {

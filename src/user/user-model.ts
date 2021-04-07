@@ -1,55 +1,60 @@
-import { v4 as uuidv4 } from 'uuid';
+import { User } from '../db/models/user';
 
-import { UserBase, UserDTO, UserId } from './types/user-dto';
+import { UserBase, UserId } from './types/user-dto';
 import { IUserModel } from './types/user-model.types';
 
 class UserModel implements IUserModel {
-  private _users: UserDTO[] = [];
+  private getUserDataFromInstance = (user: User | null) => user?.get();
+
+  constructor() {
+    this.initUsersTable();
+  }
+
+  private initUsersTable = async () => {
+    try {
+      await User.sync();
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
 
   getAll = async () => {
-    return this._users;
+    const users = await User.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
+    return users.map((user) => user.get());
   };
 
   getOne = async (id: UserId) => {
-    return this._users.find((user) => id === user.id);
+    const user = await User.findByPk(id);
+
+    return this.getUserDataFromInstance(user);
   };
 
   create = async (userData: UserBase) => {
-    const newUser: UserDTO = {
-      ...userData,
-      id: uuidv4(),
-      isDeleted: false,
-    };
+    const newUser = await User.create(userData);
 
-    this._users.push(newUser);
-
-    return newUser;
+    return newUser.get();
   };
 
   update = async (id: UserId, userData: UserBase) => {
-    const currentUserIndex = this._users.findIndex(
-      (currentUser) => id === currentUser.id
-    );
+    const user = await User.findByPk(id);
 
-    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
-      const updatedUser: UserDTO = {
-        ...this._users[currentUserIndex],
-        ...userData,
-      };
+    if (user && !user.isDeleted) {
+      await user.update(userData);
 
-      this._users[currentUserIndex] = updatedUser;
-
-      return updatedUser;
+      return this.getUserDataFromInstance(user);
     }
   };
 
   delete = async (id: UserId) => {
-    const currentUserIndex = this._users.findIndex((user) => id === user.id);
+    const user = await User.findByPk(id);
 
-    if (currentUserIndex !== -1 && !this._users[currentUserIndex].isDeleted) {
-      this._users[currentUserIndex].isDeleted = true;
+    if (user && !user.isDeleted) {
+      await user.update({ isDeleted: true });
 
-      return this._users[currentUserIndex];
+      return this.getUserDataFromInstance(user);
     }
   };
 }

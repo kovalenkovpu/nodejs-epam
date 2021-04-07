@@ -72,7 +72,9 @@ class UserService implements IUserService {
   create = async (userData: UserBase) => {
     const newUser = await this.userModel.create(userData);
 
-    return this.getUserFromUserDTO(newUser);
+    if (newUser) {
+      return this.getUserFromUserDTO(newUser);
+    }
   };
 
   update = async (id: UserId, userData: UserBase) => {

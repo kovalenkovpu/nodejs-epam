@@ -5,7 +5,7 @@ interface IUserModel {
 
   getOne: (id: UserId) => Promise<UserDTO | undefined>;
 
-  create: (user: UserBase) => Promise<UserDTO>;
+  create: (user: UserBase) => Promise<UserDTO | undefined>;
 
   update: (id: UserId, userData: UserBase) => Promise<UserDTO | undefined>;
 

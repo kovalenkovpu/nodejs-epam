@@ -3,8 +3,8 @@ import { ValidationError, ValidationErrorItem } from 'joi';
 import { User, UserDTO } from '../../types/user-dto';
 
 interface FormatterValidationError {
-  message: ValidationErrorItem['message'];
-  path: ValidationErrorItem['path'];
+  [key: string]: ValidationErrorItem['message'];
+  // path: ValidationErrorItem['path'];
 }
 
 interface IUserValidator {

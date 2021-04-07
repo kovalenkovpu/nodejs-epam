@@ -5,15 +5,38 @@ import find from 'lodash/find';
 
 import { FormatterValidationError } from './types/user-validator.types';
 import { User, UserBase } from '../types/user-dto';
-import { userLoginSchema, userSchema } from './user-schema';
-import { userService } from '../user-service';
+import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
 import { UserParams } from '../types/user-controller.types';
+import { userModel } from '../user-model';
 
-const formatError = ({ details }: ValidationError) =>
-  details.map<FormatterValidationError>(({ message, path }) => ({
-    message,
-    path,
-  }));
+const formatError = (error: ValidationError) => {
+  if (error.isJoi) {
+    return error;
+  }
+
+  return error.details.reduce<FormatterValidationError>(
+    (acc, { message, context }) => ({ ...acc, [`${context?.key}`]: message }),
+    {}
+  );
+};
+
+const validateUserId = async (
+  req: Request<UserParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      params: { id },
+    } = req;
+
+    await userIdSchema.validateAsync(id, { abortEarly: false });
+
+    return next();
+  } catch (error) {
+    res.status(400).json(formatError(error));
+  }
+};
 
 const validateUser = async (
   req: Request<any, UserBase, UserBase>,
@@ -45,7 +68,7 @@ const validateUserUniqueCreate = async (
 ): Promise<void> => {
   try {
     const { body: newUser } = req;
-    const existingUsers = await userService.getAll();
+    const existingUsers = await userModel.getAll();
 
     const validatedUsers = await userLoginSchema.validateAsync(
       [...existingUsers, newUser],
@@ -74,7 +97,7 @@ const validateUserUniqueUpdate = async (
       body: newUser,
       params: { id },
     } = req;
-    let existingUsers = await userService.getAll();
+    let existingUsers = await userModel.getAll();
     const existingUser = find(existingUsers, { id });
 
     if (!existingUser) {
@@ -101,4 +124,9 @@ const validateUserUniqueUpdate = async (
   }
 };
 
-export { validateUser, validateUserUniqueCreate, validateUserUniqueUpdate };
+export {
+  validateUserId,
+  validateUser,
+  validateUserUniqueCreate,
+  validateUserUniqueUpdate,
+};

@@ -9,7 +9,11 @@ userRouter.get('/', userController.getAll);
 
 userRouter.get('/search', userController.getAutoSuggestUsers);
 
-userRouter.get('/:id', userController.getOne);
+userRouter.get(
+  '/:id',
+  userValidationMiddleware.validateUserId,
+  userController.getOne
+);
 
 userRouter.post(
   '/',
@@ -20,11 +24,16 @@ userRouter.post(
 
 userRouter.put(
   '/:id',
+  userValidationMiddleware.validateUserId,
   userValidationMiddleware.validateUser,
   userValidationMiddleware.validateUserUniqueUpdate,
   userController.update
 );
 
-userRouter.delete('/:id', userController.delete);
+userRouter.delete(
+  '/:id',
+  userValidationMiddleware.validateUserId,
+  userController.delete
+);
 
 export { userRouter };

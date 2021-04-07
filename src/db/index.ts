@@ -1,7 +1,12 @@
 import { Sequelize } from 'sequelize';
 import process from 'process';
 
-const sequelize = new Sequelize(process.env.DATABASE_URL || '');
+const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: true,
+  },
+});
 
 const initDBConnenction = async (): Promise<void> => {
   try {

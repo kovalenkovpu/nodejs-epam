@@ -1,25 +1,20 @@
-import { Model, DataTypes, Optional } from 'sequelize';
+import {
+  DataTypes,
+  Sequelize,
+  ModelCtor,
+  ModelOptions,
+  ModelAttributes,
+} from 'sequelize';
 
-import { sequelize } from '..';
-import { UserDTO, UserId } from '../../user/types/user-dto';
+import { UserInstance } from '../types/user-model.types';
 
-// prettier-ignore
-type UserCreationAttributes = Optional<UserDTO, 'id' | 'isDeleted'>
+const initUserTable = (sequalize: Sequelize): ModelCtor<UserInstance> => {
+  const modelOptions: ModelOptions = {
+    modelName: 'User',
+    tableName: 'Users',
+  };
 
-class User extends Model<UserDTO, UserCreationAttributes> implements UserDTO {
-  public id!: UserId;
-  public login!: string;
-  public password!: string;
-  public age!: number;
-  public isDeleted!: boolean;
-
-  // timestamps!
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-}
-
-User.init(
-  {
+  const attributes: ModelAttributes<UserInstance> = {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -41,13 +36,9 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-  },
-  {
-    sequelize, // We need to pass the connection instance
-    // modelName: 'User', // We need to choose the model name
-    tableName: 'Users',
-    freezeTableName: true,
-  }
-);
+  };
 
-export { User };
+  return sequalize.define<UserInstance>('User', attributes, modelOptions);
+};
+
+export { initUserTable };

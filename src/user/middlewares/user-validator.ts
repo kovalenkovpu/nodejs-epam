@@ -3,21 +3,17 @@ import { ValidationError } from 'joi';
 import last from 'lodash/last';
 import find from 'lodash/find';
 
-import { FormatterValidationError } from './types/user-validator.types';
 import { User, UserBase } from '../types/user-dto';
 import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
 import { UserParams } from '../types/user-controller.types';
 import { userModel } from '../user-model';
 
 const formatError = (error: ValidationError) => {
-  if (error.isJoi) {
+  if (!error.isJoi) {
     return error;
   }
 
-  return error.details.reduce<FormatterValidationError>(
-    (acc, { message, context }) => ({ ...acc, [`${context?.key}`]: message }),
-    {}
-  );
+  return error.details.map(({ message }) => message);
 };
 
 const validateUserId = async (

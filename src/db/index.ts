@@ -1,26 +1,33 @@
 import { Sequelize } from 'sequelize';
 import process from 'process';
 
+import { initUserTable } from './models/user';
+import { IDB, InitDBConnenction } from './types/db.types';
+
+const dialectOptions =
+  process.env.NODE_ENV === 'production'
+    ? { ssl: { require: true, rejectUnauthorized: false } }
+    : undefined;
+
 const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
   dialect: 'postgres',
   protocol: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions,
 });
 
-const initDBConnenction = async (): Promise<void> => {
+const initDBConnenction: InitDBConnenction = async () => {
   try {
     await sequelize.authenticate();
-    // eslint-disable-next-line no-undef
     console.log('Connection to the DB has been established successfully.');
   } catch (error) {
-    // eslint-disable-next-line no-undef
     console.error('Unable to connect to the DB:', error);
   }
 };
 
-export { initDBConnenction, sequelize };
+const db: IDB = {
+  sequelize,
+  initDBConnenction,
+  User: initUserTable(sequelize),
+};
+
+export { db };

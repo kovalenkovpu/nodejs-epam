@@ -1,6 +1,6 @@
 import { ModelCtor, Sequelize } from 'sequelize/types';
 
-import { UserInstance } from '../models/user';
+import { UserInstance } from './user-model.types';
 
 interface IDB {
   sequelize: Sequelize;

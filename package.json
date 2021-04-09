@@ -12,6 +12,8 @@
     "start": "node ./dist/index.js",
     "build": "tsc --build",
     "heroku:promote": "git push heroku TASK3-PSQL-and-layered-architecture:main",
+    "db:migrate:dev": "npm run build && npx sequelize-cli db:migrate",
+    "db:migrate": "npx sequelize-cli db:migrate --config ./db/config/config.js",
     "tslint": "tsc --noEmit",
     "lint": "eslint --ext .ts src --color",
     "lint:all": "npm run tslint & npm run lint"

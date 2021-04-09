@@ -1,5 +1,4 @@
 import { Sequelize } from 'sequelize';
-import process from 'process';
 
 import { initUserTable } from './models/user';
 import { IDB, InitDBConnenction } from './types/db.types';

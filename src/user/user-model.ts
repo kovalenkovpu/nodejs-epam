@@ -1,4 +1,5 @@
 import { db } from '../db';
+import { usersSeeds } from '../db/seeders/users';
 import { IDB } from '../db/types/db.types';
 import { UserInstance } from '../db/types/user-model.types';
 
@@ -18,7 +19,9 @@ class UserModel implements IUserModel {
 
   private initUsersTable = async () => {
     try {
-      await this.db.User.sync();
+      // TODO: should be replaced by Sequalize migrations
+      await this.db.User.sync({ force: true });
+      await this.db.User.bulkCreate(usersSeeds);
     } catch (error) {
       throw new Error(error);
     }

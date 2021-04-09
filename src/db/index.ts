@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 import { initUserTable } from './models/user';
-import { IDB, InitDBConnenction } from './types/db.types';
+import { IDB } from './types/db.types';
 
 const dialectOptions =
   process.env.NODE_ENV === 'production'
@@ -14,18 +14,8 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
   dialectOptions,
 });
 
-const initDBConnenction: InitDBConnenction = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Connection to the DB has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the DB:', error);
-  }
-};
-
 const db: IDB = {
   sequelize,
-  initDBConnenction,
   User: initUserTable(sequelize),
 };
 

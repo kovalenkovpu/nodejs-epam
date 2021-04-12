@@ -7,7 +7,11 @@ const userRouter = express.Router();
 
 userRouter.get('/', userController.getAll);
 
-userRouter.get('/search', userController.getAutoSuggestUsers);
+userRouter.get(
+  '/search',
+  userValidationMiddleware.validateQueryParams,
+  userController.getAutoSuggestUsers
+);
 
 userRouter.get(
   '/:id',

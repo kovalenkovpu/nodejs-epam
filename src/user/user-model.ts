@@ -1,15 +1,12 @@
+import { Op } from 'sequelize';
 import { db } from '../db';
 import { usersSeeds } from '../db/seeders/users';
 import { IDB } from '../db/types/db.types';
-import { UserInstance } from '../db/types/user-model.types';
 
 import { UserBase, UserId } from './types/user-dto';
 import { IUserModel } from './types/user-model.types';
 
 class UserModel implements IUserModel {
-  EXCLUDE_OPTIONS = { exclude: ['createdAt', 'updatedAt'] };
-
-  private getUserDataFromInstance = (user: UserInstance | null) => user?.get();
   private db;
 
   constructor(dbInstance: IDB) {
@@ -29,18 +26,41 @@ class UserModel implements IUserModel {
 
   getAll = async () => {
     const users = await this.db.User.findAll({
-      attributes: this.EXCLUDE_OPTIONS,
+      where: { isDeleted: false },
+    });
+
+    return users.map((user) => user.get());
+  };
+
+  getAllWithCompleteData = async () => {
+    const users = await this.db.User.findAll();
+
+    return users.map((user) => user.get());
+  };
+
+  getAutoSuggestUsers = async (
+    loginSubstring: string,
+    limit: number | undefined
+  ) => {
+    const users = await this.db.User.findAll({
+      where: {
+        isDeleted: false,
+        login: {
+          [Op.iLike]: `%${loginSubstring}%`,
+        },
+      },
+      limit,
     });
 
     return users.map((user) => user.get());
   };
 
   getOne = async (id: UserId) => {
-    const user = await this.db.User.findByPk(id, {
-      attributes: this.EXCLUDE_OPTIONS,
+    const user = await this.db.User.findOne({
+      where: { id, isDeleted: false },
     });
 
-    return this.getUserDataFromInstance(user);
+    return user?.get();
   };
 
   create = async (userData: UserBase) => {
@@ -50,23 +70,32 @@ class UserModel implements IUserModel {
   };
 
   update = async (id: UserId, userData: UserBase) => {
-    const user = await this.db.User.findByPk(id);
+    const [, affectedUsers] = await this.db.User.update(userData, {
+      where: {
+        id,
+        isDeleted: false,
+      },
+      returning: true,
+    });
+    const [updatedUser] = affectedUsers;
 
-    if (user && !user.isDeleted) {
-      await user.update(userData);
-
-      return this.getUserDataFromInstance(user);
-    }
+    return updatedUser?.get();
   };
 
   delete = async (id: UserId) => {
-    const user = await this.db.User.findByPk(id);
+    const [, affectedUsers] = await this.db.User.update(
+      { isDeleted: true },
+      {
+        where: {
+          id,
+          isDeleted: false,
+        },
+        returning: true,
+      }
+    );
+    const [updatedUser] = affectedUsers;
 
-    if (user && !user.isDeleted) {
-      await user.update({ isDeleted: true });
-
-      return this.getUserDataFromInstance(user);
-    }
+    return updatedUser?.get();
   };
 }
 

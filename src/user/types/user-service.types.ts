@@ -10,8 +10,8 @@ interface IUserService {
   getAllWithCompleteData: () => Promise<UserDTO[]>;
 
   getAutoSuggestUsers: (
-    loginSubstring: string | undefined,
-    limit: string | undefined
+    loginSubstring: string,
+    limit: number | undefined
   ) => Promise<AutosuggestUsersResponse>;
 
   getOne: (id: UserId) => Promise<User | undefined>;

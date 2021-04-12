@@ -1,5 +1,3 @@
-import isEmpty from 'lodash/isEmpty';
-import sortBy from 'lodash/sortBy';
 import omit from 'lodash/omit';
 
 import { IUserService } from './types/user-service.types';
@@ -15,47 +13,28 @@ class UserService implements IUserService {
     this.userModel = userModel;
   }
 
-  private getUserDTOsWithoutDeleted = (userDTOs: UserDTO[]) =>
-    userDTOs.filter(({ isDeleted }) => !isDeleted);
-
   private getUserFromUserDTO = (userDTO: UserDTO): User =>
-    omit(userDTO, ['isDeleted']);
-
-  private getUsersFromUserDTOs = (userDTOs: UserDTO[]) =>
-    userDTOs.map<User>(this.getUserFromUserDTO);
-
-  getAllWithCompleteData = () => this.userModel.getAll();
+    omit(userDTO, ['isDeleted', 'createdAt', 'updatedAt']);
 
   getAll = async () => {
-    const allUsers = await this.userModel.getAll();
-    const allUsersWithoutDeleted = this.getUserDTOsWithoutDeleted(allUsers);
-    const users = this.getUsersFromUserDTOs(allUsersWithoutDeleted);
+    const users = await this.userModel.getAll();
 
-    return users;
+    return users.map(this.getUserFromUserDTO);
   };
 
+  getAllWithCompleteData = () => this.userModel.getAllWithCompleteData();
+
   getAutoSuggestUsers = async (
-    loginSubstring: string | undefined = '',
-    limit: string | undefined
+    loginSubstring: string,
+    limit: number | undefined
   ) => {
-    const userDTOs = await this.userModel.getAll();
-    const userDTOsWithoutDeleted = this.getUserDTOsWithoutDeleted(userDTOs);
-    const users = this.getUsersFromUserDTOs(userDTOsWithoutDeleted);
-
-    // "limit" might be not provided - return all users
-    const safeLimit = isEmpty(limit) ? users.length : Number(limit);
-
-    // Filter users by their "login", sort them by the "login"
-    const filteredUsers = users.filter(({ login }) =>
-      login.includes(loginSubstring)
+    const userDTOs = await this.userModel.getAutoSuggestUsers(
+      loginSubstring,
+      limit
     );
-    const sortedUsers = sortBy(filteredUsers, ['login']);
-
-    // Return "totalCount" to indicate how many results there're regardless
-    // of the "limit" in request - FE convenience
     const autosuggestedUsers: AutosuggestUsersResponse = {
-      totalCount: sortedUsers.length,
-      users: sortedUsers.slice(0, safeLimit),
+      totalCount: userDTOs.length,
+      users: userDTOs.map(this.getUserFromUserDTO),
     };
 
     return autosuggestedUsers;
@@ -64,7 +43,7 @@ class UserService implements IUserService {
   getOne = async (id: UserId) => {
     const user = await this.userModel.getOne(id);
 
-    if (user && !user.isDeleted) {
+    if (user) {
       return this.getUserFromUserDTO(user);
     }
   };

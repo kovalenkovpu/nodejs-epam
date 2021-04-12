@@ -11,9 +11,11 @@ type UserId = string;
 interface UserDTO extends UserBase {
   id: UserId;
   isDeleted: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Send to FE
-type User = Omit<UserDTO, 'isDeleted'>;
+type User = Omit<UserDTO, 'isDeleted' | 'createdAt' | 'updatedAt'>;
 
 export type { UserBase, UserDTO, User, UserId };

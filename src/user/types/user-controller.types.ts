@@ -9,8 +9,8 @@ interface GetAllUsersQueryParams {
 }
 
 interface AutosuggestUsersQueryParams {
-  loginSubstring?: string;
-  limit?: string;
+  loginSubstring: string;
+  limit?: number;
 }
 
 interface AutosuggestUsersResponse {

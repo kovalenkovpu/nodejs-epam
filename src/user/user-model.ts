@@ -1,28 +1,18 @@
 import { Op } from 'sequelize';
-import { db } from '../db';
-import { usersSeeds } from '../db/seeders/users';
-import { IDB } from '../db/types/db.types';
+import dataBase from '../../db/models';
 
 import { UserBase, UserId } from './types/user-dto';
-import { IUserModel } from './types/user-model.types';
+import { IUserModel, IDataBase } from './types/user-model.types';
+
+// Dirty hack to make JS work with TS and preserve typings
+const db = (dataBase as unknown) as IDataBase;
 
 class UserModel implements IUserModel {
   private db;
 
-  constructor(dbInstance: IDB) {
+  constructor(dbInstance: IDataBase) {
     this.db = dbInstance;
-    this.initUsersTable();
   }
-
-  private initUsersTable = async () => {
-    try {
-      // TODO: should be replaced by Sequalize migrations
-      await this.db.User.sync({ force: true });
-      await this.db.User.bulkCreate(usersSeeds);
-    } catch (error) {
-      throw new Error(error);
-    }
-  };
 
   getAll = async () => {
     const users = await this.db.User.findAll({

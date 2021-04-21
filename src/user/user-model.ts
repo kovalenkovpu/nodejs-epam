@@ -1,8 +1,9 @@
 import { Op } from 'sequelize';
-import dataBase from '../../db/models';
 
+import dataBase from '../../db/models';
+import { IDataBase } from '../common/types/db-types';
 import { UserBase, UserId } from './types/user-dto';
-import { IUserModel, IDataBase } from './types/user-model.types';
+import { IUserModel } from './types/user-model.types';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;

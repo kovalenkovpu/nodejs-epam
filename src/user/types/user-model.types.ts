@@ -1,4 +1,4 @@
-import { Model, ModelCtor, Optional } from 'sequelize/types';
+import { Model, Optional } from 'sequelize/types';
 
 import { UserBase, UserDTO, UserId } from './user-dto';
 
@@ -7,10 +7,6 @@ type UserCreationAttributes = Optional<UserDTO, 'id' | 'isDeleted'>;
 interface UserInstance
   extends Model<UserDTO, UserCreationAttributes>,
     UserDTO {}
-
-interface IDataBase {
-  User: ModelCtor<UserInstance>;
-}
 
 interface IUserModel {
   getAll: () => Promise<UserDTO[]>;
@@ -31,4 +27,4 @@ interface IUserModel {
   delete: (id: UserId) => Promise<UserDTO | undefined>;
 }
 
-export type { IDataBase, IUserModel };
+export type { UserInstance, IUserModel };

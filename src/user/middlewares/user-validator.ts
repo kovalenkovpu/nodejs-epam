@@ -1,21 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { ValidationError } from 'joi';
 import last from 'lodash/last';
 import find from 'lodash/find';
 import isNumber from 'lodash/isNumber';
 
+import { formatError } from '../../common/utils/error-handling';
 import { User, UserBase } from '../types/user-dto';
-import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
 import { UserParams } from '../types/user-controller.types';
 import { userModel } from '../user-model';
-
-const formatError = (error: ValidationError) => {
-  if (!error.isJoi) {
-    return error;
-  }
-
-  return error.details.map(({ message }) => message);
-};
+import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
 
 const validateUserId = async (
   req: Request<UserParams>,

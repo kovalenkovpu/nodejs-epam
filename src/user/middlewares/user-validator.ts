@@ -1,13 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import last from 'lodash/last';
 import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
 import isNumber from 'lodash/isNumber';
+
+import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
 
 import { formatError } from '../../common/utils/error-handling';
 import { User, UserBase } from '../types/user-dto';
 import { UserParams } from '../types/user-controller.types';
-import { userModel } from '../user-model';
-import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
+import dataBase from '../../../db/models';
+import { IDataBase } from '../../common/types/db-types';
+
+// Dirty hack to make JS work with TS and preserve typings
+const db = (dataBase as unknown) as IDataBase;
 
 const validateUserId = async (
   req: Request<UserParams>,
@@ -57,7 +63,9 @@ const validateUserUniqueCreate = async (
 ): Promise<void> => {
   try {
     const { body: newUser } = req;
-    const existingUsers = await userModel.getAll();
+    // TODO: think over how to make this external validation some other way
+    const existingUsersInstances = await db.User.findAll();
+    const existingUsers = existingUsersInstances.map((user) => user.get());
 
     const validatedUsers = await userLoginSchema.validateAsync(
       [...existingUsers, newUser],
@@ -86,7 +94,9 @@ const validateUserUniqueUpdate = async (
       body: newUser,
       params: { id },
     } = req;
-    let existingUsers = await userModel.getAll();
+    // TODO: think over how to make this external validation some other way
+    const existingUsersInstances = await db.User.findAll();
+    let existingUsers = existingUsersInstances.map((user) => user.get());
     const existingUser = find(existingUsers, { id });
 
     if (!existingUser) {
@@ -121,11 +131,11 @@ const validateQueryParams = (
   const {
     query: { loginSubstring = '', limit },
   } = req;
-
   const limitNumber = Number(limit);
-
   const limitSafe =
-    isNumber(limitNumber) && !isNaN(limitNumber) ? limitNumber : undefined;
+    !isEmpty(limit) && isNumber(limitNumber) && !isNaN(limitNumber)
+      ? limitNumber
+      : undefined;
 
   req.query = { loginSubstring, limit: limitSafe };
 

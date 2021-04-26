@@ -1,8 +1,9 @@
 import { Group, GroupBase, GroupId } from './group-dto';
-import { IGroupModel } from './group-model.types';
+
+import { IDataBase } from '../../common/types/db-types';
 
 interface IGroupService {
-  groupModel: IGroupModel;
+  groupModel: IDataBase['Group'];
 
   getAll: () => Promise<Group[]>;
 

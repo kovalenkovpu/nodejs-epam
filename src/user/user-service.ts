@@ -1,78 +1,120 @@
+import { Op } from 'sequelize';
 import omit from 'lodash/omit';
 
 import { IUserService } from './types/user-service.types';
-import { UserBase, UserDTO, User, UserId } from './types/user-dto';
+import { UserBase, User, UserId } from './types/user-dto';
 import { AutosuggestUsersResponse } from './types/user-controller.types';
-import { IUserModel } from './types/user-model.types';
-import { userModel as userModelInstance } from './user-model';
+import { UserInstance } from './types/user-model.types';
+
+import dataBase from '../../db/models';
+import { IDataBase } from '../common/types/db-types';
+import { generateNotFoundMessage } from '../common/utils/error-handling';
+
+// Dirty hack to make JS work with TS and preserve typings
+const db = (dataBase as unknown) as IDataBase;
 
 class UserService implements IUserService {
-  userModel: IUserModel;
+  userModel: IDataBase['User'];
 
-  constructor(userModel: IUserModel) {
-    this.userModel = userModel;
+  constructor(dbInstance: IDataBase) {
+    this.userModel = dbInstance.User;
   }
 
-  private getUserFromUserDTO = (userDTO: UserDTO): User =>
-    omit(userDTO, ['isDeleted', 'createdAt', 'updatedAt']);
+  private getUserFromUserInstance = (userInstance: UserInstance): User =>
+    omit(userInstance.get(), ['isDeleted', 'createdAt', 'updatedAt']);
 
   getAll = async () => {
-    const users = await this.userModel.getAll();
+    const users = await this.userModel.findAll({
+      where: { isDeleted: false },
+    });
 
-    return users.map(this.getUserFromUserDTO);
+    return users.map(this.getUserFromUserInstance);
   };
 
-  getAllWithCompleteData = () => this.userModel.getAllWithCompleteData();
+  getAllWithCompleteData = async () => {
+    const users = await this.userModel.findAll();
+
+    return users.map((user) => user.get());
+  };
 
   getAutoSuggestUsers = async (
     loginSubstring: string,
     limit: number | undefined
   ) => {
-    const userDTOs = await this.userModel.getAutoSuggestUsers(
-      loginSubstring,
-      limit
-    );
+    console.log('LIMIT: ', limit);
+    const users = await this.userModel.findAndCountAll({
+      where: {
+        isDeleted: false,
+        login: {
+          [Op.iLike]: `%${loginSubstring}%`,
+        },
+      },
+      limit,
+    });
+
     const autosuggestedUsers: AutosuggestUsersResponse = {
-      totalCount: userDTOs.length,
-      users: userDTOs.map(this.getUserFromUserDTO),
+      totalCount: users.count,
+      users: users.rows.map(this.getUserFromUserInstance),
     };
 
     return autosuggestedUsers;
   };
 
   getOne = async (id: UserId) => {
-    const user = await this.userModel.getOne(id);
+    const user = await this.userModel.findOne({
+      where: { id, isDeleted: false },
+    });
 
-    if (user) {
-      return this.getUserFromUserDTO(user);
+    if (!user) {
+      return Promise.reject(generateNotFoundMessage(id, 'User'));
     }
+
+    return this.getUserFromUserInstance(user);
   };
 
   create = async (userData: UserBase) => {
     const newUser = await this.userModel.create(userData);
 
-    if (newUser) {
-      return this.getUserFromUserDTO(newUser);
-    }
+    return this.getUserFromUserInstance(newUser);
   };
 
   update = async (id: UserId, userData: UserBase) => {
-    const updatedUser = await this.userModel.update(id, userData);
+    const user = await this.userModel.findOne({
+      where: { id, isDeleted: false },
+    });
 
-    if (updatedUser) {
-      return this.getUserFromUserDTO(updatedUser);
+    if (!user) {
+      return Promise.reject(generateNotFoundMessage(id, 'User'));
     }
+
+    const updatedUser = await user.update(userData);
+
+    return this.getUserFromUserInstance(updatedUser);
   };
 
   delete = async (id: UserId) => {
-    const deletedUser = await this.userModel.delete(id);
+    const user = await this.userModel.findOne({
+      where: { id, isDeleted: false },
+    });
 
-    if (deletedUser) {
-      return this.getUserFromUserDTO(deletedUser);
+    if (!user) {
+      return Promise.reject(generateNotFoundMessage(id, 'User'));
     }
+
+    const updatedUser = await user.update(
+      { isDeleted: true },
+      {
+        where: {
+          id,
+          isDeleted: false,
+        },
+      }
+    );
+
+    return this.getUserFromUserInstance(updatedUser);
   };
 }
 
-const userService = new UserService(userModelInstance);
+const userService = new UserService(db);
 
 export { userService };

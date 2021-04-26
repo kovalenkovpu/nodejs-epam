@@ -36,8 +36,6 @@ const groupSchema = Joi.object<GroupBase>({
 
 const groupNameSchema = Joi.array()
   .unique('name', { ignoreUndefined: true })
-  .messages({
-    'string.unique': '"name" is not unique',
-  });
+  .message('"name" is not unique');
 
 export { groupIdSchema, groupSchema, groupNameSchema };

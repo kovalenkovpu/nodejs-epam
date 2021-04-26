@@ -5,9 +5,6 @@ import { Group, GroupBase } from './types/group-dto';
 import { groupService } from './group-service';
 
 class GroupController implements IGroupController {
-  private generateNotFoundMessage = (id: string) =>
-    `Group with id: ${id} not found`;
-
   getAll = async (req: Request<any, Group[]>, res: Response<Group[]>) => {
     try {
       const groups = await groupService.getAll();
@@ -23,14 +20,12 @@ class GroupController implements IGroupController {
       const { id } = req.params;
       const currentGroup = await groupService.getOne(id);
 
-      if (!currentGroup) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
-
       res.send(currentGroup);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };
@@ -57,17 +52,14 @@ class GroupController implements IGroupController {
         params: { id },
         body: groupData,
       } = req;
-
       const updatedGroup = await groupService.update(id, groupData);
-
-      if (!updatedGroup) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
 
       res.send(updatedGroup);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };
@@ -75,16 +67,15 @@ class GroupController implements IGroupController {
   delete = async (req: Request<GroupParams>, res: Response<Group | string>) => {
     try {
       const { id } = req.params;
-      const deletedGroup = await groupService.delete(id);
 
-      if (!deletedGroup) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
+      await groupService.delete(id);
 
       res.send(`Group with id: ${id} successfully deleted`);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };

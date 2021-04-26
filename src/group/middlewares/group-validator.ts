@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import last from 'lodash/last';
+import find from 'lodash/find';
+
+import { groupIdSchema, groupNameSchema, groupSchema } from './group-schema';
 
 import { formatError } from '../../common/utils/error-handling';
 import { GroupParams } from '../types/group-controller.types';
 import { Group, GroupBase } from '../types/group-dto';
-import { groupModel } from '../group-model';
-import { groupIdSchema, groupNameSchema, groupSchema } from './group-schema';
-import find from 'lodash/find';
+import dataBase from '../../../db/models';
+import { IDataBase } from '../../common/types/db-types';
+
+// Dirty hack to make JS work with TS and preserve typings
+const db = (dataBase as unknown) as IDataBase;
 
 const validateGroupId = async (
   req: Request<GroupParams>,
@@ -58,10 +63,12 @@ const validateGroupUniqueCreate = async (
 ): Promise<void> => {
   try {
     const { body: newGroup } = req;
-    const existingGroup = await groupModel.getAll();
+    // TODO: think over how to make this external validation some other way
+    const existingGroupsInstances = await db.Group.findAll();
+    const existingGroups = existingGroupsInstances.map((group) => group.get());
 
     const validatedGroups = await groupNameSchema.validateAsync(
-      [...existingGroup, newGroup],
+      [...existingGroups, newGroup],
       { abortEarly: false }
     );
 
@@ -87,7 +94,9 @@ const validateGroupUniqueUpdate = async (
       body: newGroup,
       params: { id },
     } = req;
-    let existingGroups = await groupModel.getAll();
+    // TODO: think over how to make this external validation some other way
+    const existingGroupsInstances = await db.Group.findAll();
+    let existingGroups = existingGroupsInstances.map((group) => group.get());
     const existingGroup = find(existingGroups, { id });
 
     if (!existingGroup) {

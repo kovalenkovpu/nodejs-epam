@@ -33,8 +33,6 @@ const userSchema = Joi.object<UserBase>({
 
 const userLoginSchema = Joi.array()
   .unique('login', { ignoreUndefined: true })
-  .messages({
-    'array.unique': '"login" is not unique',
-  });
+  .message('"login" is not unique');
 
 export { userIdSchema, userSchema, userLoginSchema };

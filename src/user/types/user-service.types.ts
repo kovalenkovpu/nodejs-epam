@@ -1,13 +1,14 @@
 import { AutosuggestUsersResponse } from './user-controller.types';
-import { UserBase, User, UserDTO, UserId } from './user-dto';
-import { IUserModel } from './user-model.types';
+import { UserBase, User, UserId } from './user-dto';
+
+import { IDataBase } from '../../common/types/db-types';
 
 interface IUserService {
-  userModel: IUserModel;
+  userModel: IDataBase['User'];
 
   getAll: () => Promise<User[]>;
 
-  getAllWithCompleteData: () => Promise<UserDTO[]>;
+  getAllWithCompleteData: () => Promise<User[]>;
 
   getAutoSuggestUsers: (
     loginSubstring: string,

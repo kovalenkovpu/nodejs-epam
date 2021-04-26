@@ -1,59 +1,73 @@
 import omit from 'lodash/omit';
 
 import { IGroupService } from './types/group-service.types';
-import { Group, GroupBase, GroupDTO, GroupId } from './types/group-dto';
-import { IGroupModel } from './types/group-model.types';
-import { groupModel as groupModelInstance } from './group-model';
+import { Group, GroupBase, GroupId } from './types/group-dto';
+import { GroupInstance } from './types/group-model.types';
+
+import { IDataBase } from '../common/types/db-types';
+import { generateNotFoundMessage } from '../common/utils/error-handling';
+import dataBase from '../../db/models';
+
+// Dirty hack to make JS work with TS and preserve typings
+const db = (dataBase as unknown) as IDataBase;
 
 class GroupService implements IGroupService {
-  groupModel: IGroupModel;
+  groupModel: IDataBase['Group'];
 
-  constructor(groupModel: IGroupModel) {
-    this.groupModel = groupModel;
+  constructor(dbInstance: IDataBase) {
+    this.groupModel = dbInstance.Group;
   }
 
-  private getGroupFromGroupDTO = (groupDTO: GroupDTO): Group =>
-    omit(groupDTO, ['createdAt', 'updatedAt']);
+  private getGroupFromGroupInstance = (groupInstance: GroupInstance): Group =>
+    omit(groupInstance.get(), ['createdAt', 'updatedAt']);
 
   getAll = async () => {
-    const groups = await this.groupModel.getAll();
+    const groups = await this.groupModel.findAll();
 
-    return groups.map(this.getGroupFromGroupDTO);
+    return groups.map(this.getGroupFromGroupInstance);
   };
 
   getOne = async (id: GroupId) => {
-    const group = await this.groupModel.getOne(id);
+    const group = await this.groupModel.findOne({ where: { id } });
 
-    if (group) {
-      return this.getGroupFromGroupDTO(group);
+    if (!group) {
+      return Promise.reject(generateNotFoundMessage(id, 'Group'));
     }
+
+    return this.getGroupFromGroupInstance(group);
   };
 
   create = async (groupData: GroupBase) => {
     const newGroup = await this.groupModel.create(groupData);
 
-    if (newGroup) {
-      return this.getGroupFromGroupDTO(newGroup);
-    }
+    return this.getGroupFromGroupInstance(newGroup);
   };
 
   update = async (id: GroupId, groupData: GroupBase) => {
-    const updatedGroup = await this.groupModel.update(id, groupData);
+    const group = await this.groupModel.findOne({ where: { id } });
 
-    if (updatedGroup) {
-      return this.getGroupFromGroupDTO(updatedGroup);
+    if (!group) {
+      return Promise.reject(generateNotFoundMessage(id, 'Group'));
     }
+
+    const updatedGroup = await group.update(groupData);
+
+    return this.getGroupFromGroupInstance(updatedGroup);
   };
 
   delete = async (id: GroupId) => {
-    const deletedGroup = await this.groupModel.delete(id);
+    const group = await this.groupModel.findOne({ where: { id } });
 
-    if (deletedGroup) {
-      return this.getGroupFromGroupDTO(deletedGroup);
+    if (!group) {
+      return Promise.reject(generateNotFoundMessage(id, 'Group'));
     }
+
+    await group.destroy();
+
+    return this.getGroupFromGroupInstance(group);
   };
 }
 
-const groupService = new GroupService(groupModelInstance);
+const groupService = new GroupService(db);
 
 export { groupService };

@@ -46,7 +46,6 @@ class UserController implements IUserController {
   ) => {
     try {
       const { loginSubstring, limit } = req.query;
-
       const autosuggestedUsers = await userService.getAutoSuggestUsers(
         loginSubstring,
         limit
@@ -63,14 +62,12 @@ class UserController implements IUserController {
       const { id } = req.params;
       const currentUser = await userService.getOne(id);
 
-      if (!currentUser) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
-
       res.send(currentUser);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };
@@ -94,17 +91,14 @@ class UserController implements IUserController {
         params: { id },
         body: userData,
       } = req;
-
       const updatedUser = await userService.update(id, userData);
-
-      if (!updatedUser) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
 
       res.send(updatedUser);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };
@@ -112,16 +106,15 @@ class UserController implements IUserController {
   delete = async (req: Request<UserParams>, res: Response<User | string>) => {
     try {
       const { id } = req.params;
-      const deletedUser = await userService.delete(id);
 
-      if (!deletedUser) {
-        const errorMessage = this.generateNotFoundMessage(id);
-
-        return res.status(404).json(errorMessage);
-      }
+      await userService.delete(id);
 
       res.send(`User with id: ${id} successfully deleted`);
     } catch (error) {
+      if (error.isNotFound) {
+        res.status(404).json(error.message);
+      }
+
       res.status(500).json(error);
     }
   };

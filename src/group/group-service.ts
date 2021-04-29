@@ -62,6 +62,11 @@ class GroupService implements IGroupService {
       return Promise.reject(generateNotFoundMessage(id, 'Group'));
     }
 
+    // Remove assosiated users from junction table
+    const groupUsers = await group.getUsers();
+    const groupUsersIds = groupUsers.map(({ id: userId }) => userId);
+    await group.removeUsers(groupUsersIds);
+
     await group.destroy();
 
     return this.getGroupFromGroupInstance(group);

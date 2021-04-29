@@ -12,9 +12,6 @@ import { UserBase, User, UserDTO } from './types/user-dto';
 import { userService } from './user-service';
 
 class UserController implements IUserController {
-  private generateNotFoundMessage = (id: string) =>
-    `User with id: ${id} not found`;
-
   getAll = async (
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[] | UserDTO[]>

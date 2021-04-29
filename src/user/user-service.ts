@@ -41,7 +41,6 @@ class UserService implements IUserService {
     loginSubstring: string,
     limit: number | undefined
   ) => {
-    console.log('LIMIT: ', limit);
     const users = await this.userModel.findAndCountAll({
       where: {
         isDeleted: false,
@@ -100,6 +99,11 @@ class UserService implements IUserService {
     if (!user) {
       return Promise.reject(generateNotFoundMessage(id, 'User'));
     }
+
+    // Remove assosiated groups from junction table
+    const userGroups = await user.getGroups();
+    const userGroupsIds = userGroups.map(({ id: groupId }) => groupId);
+    await user.removeGroups(userGroupsIds);
 
     const updatedUser = await user.update(
       { isDeleted: true },

@@ -1,4 +1,5 @@
 import {
+  BelongsToManyAddAssociationsMixin,
   BelongsToManyGetAssociationsMixin,
   BelongsToManyRemoveAssociationsMixin,
   Model,
@@ -20,6 +21,7 @@ interface GroupInstance
     UserInstance,
     UserInstance['id']
   >;
+  addUsers: BelongsToManyAddAssociationsMixin<UserInstance, UserInstance['id']>;
   // TODO: add more when needed
 }
 

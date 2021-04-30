@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 
-import { IGroupController, GroupParams } from './types/group-controller.types';
+import {
+  IGroupController,
+  GroupParams,
+  AddUserToGroupRequestBody,
+} from './types/group-controller.types';
 import { Group, GroupBase } from './types/group-dto';
 import { groupService } from './group-service';
 
@@ -23,7 +27,7 @@ class GroupController implements IGroupController {
       res.send(currentGroup);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);
@@ -57,7 +61,7 @@ class GroupController implements IGroupController {
       res.send(updatedGroup);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);
@@ -73,7 +77,29 @@ class GroupController implements IGroupController {
       res.send(`Group with id: ${id} successfully deleted`);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
+      }
+
+      res.status(500).json(error);
+    }
+  };
+
+  addUsersToGroup = async (
+    req: Request<GroupParams, any, AddUserToGroupRequestBody>,
+    res: Response<string>
+  ) => {
+    try {
+      const {
+        params: { id },
+        body: { usersIds },
+      } = req;
+
+      await groupService.addUsersToGroup(id, usersIds);
+
+      res.send(`Group with id: ${id} successfully updated`);
+    } catch (error) {
+      if (error.isNotFound) {
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);

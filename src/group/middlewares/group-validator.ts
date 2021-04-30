@@ -1,14 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import last from 'lodash/last';
 import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
 
-import { groupIdSchema, groupNameSchema, groupSchema } from './group-schema';
+import { groupNameSchema, groupSchema } from './group-schema';
 
 import { formatError } from '../../common/utils/error-handling';
-import { GroupParams } from '../types/group-controller.types';
+import {
+  AddUserToGroupRequestBody,
+  GroupParams,
+} from '../types/group-controller.types';
 import { Group, GroupBase } from '../types/group-dto';
 import dataBase from '../../../db/models';
 import { IDataBase } from '../../common/types/db-types';
+import { uuidv4Schema } from '../../common/schemas';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;
@@ -23,7 +28,36 @@ const validateGroupId = async (
       params: { id },
     } = req;
 
-    await groupIdSchema.validateAsync(id, { abortEarly: false });
+    await uuidv4Schema().validateAsync(id, { abortEarly: false });
+
+    return next();
+  } catch (error) {
+    res.status(400).json(formatError(error));
+  }
+};
+
+const validateGroupUsersIds = async (
+  req: Request<GroupParams, any, AddUserToGroupRequestBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const {
+      body: { usersIds },
+    } = req;
+
+    if (isEmpty(usersIds)) {
+      throw new Error('"usersIds" can not be empty');
+    }
+
+    await Promise.all(
+      usersIds.map((id) =>
+        uuidv4Schema('"userId" is not a valid UUIDv4 string').validateAsync(
+          id,
+          { abortEarly: false }
+        )
+      )
+    );
 
     return next();
   } catch (error) {
@@ -125,6 +159,7 @@ const validateGroupUniqueUpdate = async (
 
 export {
   validateGroupId,
+  validateGroupUsersIds,
   validateGroup,
   validateGroupUniqueCreate,
   validateGroupUniqueUpdate,

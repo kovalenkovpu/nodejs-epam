@@ -4,13 +4,14 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import isNumber from 'lodash/isNumber';
 
-import { userIdSchema, userLoginSchema, userSchema } from './user-schema';
+import { userLoginSchema, userSchema } from './user-schema';
 
 import { formatError } from '../../common/utils/error-handling';
 import { User, UserBase } from '../types/user-dto';
 import { UserParams } from '../types/user-controller.types';
 import dataBase from '../../../db/models';
 import { IDataBase } from '../../common/types/db-types';
+import { uuidv4Schema } from '../../common/schemas';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;
@@ -25,7 +26,7 @@ const validateUserId = async (
       params: { id },
     } = req;
 
-    await userIdSchema.validateAsync(id, { abortEarly: false });
+    await uuidv4Schema().validateAsync(id, { abortEarly: false });
 
     return next();
   } catch (error) {

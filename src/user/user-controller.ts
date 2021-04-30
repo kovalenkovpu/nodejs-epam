@@ -62,7 +62,7 @@ class UserController implements IUserController {
       res.send(currentUser);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);
@@ -93,7 +93,7 @@ class UserController implements IUserController {
       res.send(updatedUser);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);
@@ -109,7 +109,7 @@ class UserController implements IUserController {
       res.send(`User with id: ${id} successfully deleted`);
     } catch (error) {
       if (error.isNotFound) {
-        res.status(404).json(error.message);
+        return res.status(404).json(error.message);
       }
 
       res.status(500).json(error);

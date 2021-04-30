@@ -8,7 +8,7 @@ import { UserInstance } from './types/user-model.types';
 
 import dataBase from '../../db/models';
 import { IDataBase } from '../common/types/db-types';
-import { generateNotFoundMessage } from '../common/utils/error-handling';
+import { generateNotFoundError } from '../common/utils/error-handling';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;
@@ -32,8 +32,17 @@ class UserService implements IUserService {
   };
 
   getAllWithCompleteData = async () => {
-    const users = await this.userModel.findAll();
+    const users = await this.userModel.findAll({
+      include: {
+        association: 'Groups',
+        attributes: ['id', 'name', 'permissions'],
+        through: {
+          attributes: [],
+        },
+      },
+    });
 
+    // TODO: type properly the return type
     return users.map((user) => user.get());
   };
 
@@ -65,7 +74,7 @@ class UserService implements IUserService {
     });
 
     if (!user) {
-      return Promise.reject(generateNotFoundMessage(id, 'User'));
+      return Promise.reject(generateNotFoundError(id, 'User'));
     }
 
     return this.getUserFromUserInstance(user);
@@ -83,7 +92,7 @@ class UserService implements IUserService {
     });
 
     if (!user) {
-      return Promise.reject(generateNotFoundMessage(id, 'User'));
+      return Promise.reject(generateNotFoundError(id, 'User'));
     }
 
     const updatedUser = await user.update(userData);
@@ -97,7 +106,7 @@ class UserService implements IUserService {
     });
 
     if (!user) {
-      return Promise.reject(generateNotFoundMessage(id, 'User'));
+      return Promise.reject(generateNotFoundError(id, 'User'));
     }
 
     // Remove assosiated groups from junction table

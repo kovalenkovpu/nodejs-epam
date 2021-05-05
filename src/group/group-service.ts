@@ -85,13 +85,6 @@ class GroupService implements IGroupService {
     try {
       const group = await this.groupModel.findOne({
         where: { id: groupId },
-        include: {
-          association: 'Users',
-          attributes: ['id', 'login', 'password', 'age', 'isDeleted'],
-          through: {
-            attributes: [],
-          },
-        },
         transaction,
       });
 
@@ -127,7 +120,19 @@ class GroupService implements IGroupService {
 
       await transaction.commit();
 
-      return;
+      // Here event after commit() "group" doesn't have updated users,
+      // so we need to query the group again.
+      const updatedGroup = (await this.groupModel.findOne({
+        where: { id: groupId },
+        include: {
+          association: 'Users',
+          attributes: ['id', 'login', 'password', 'age'],
+          through: { attributes: [] },
+        },
+        // "updatedGroup" always exists, so it's done for TS purposes only
+      })) as GroupInstance;
+
+      return this.getGroupFromGroupInstance(updatedGroup);
     } catch (error) {
       await transaction.rollback();
 

@@ -18,7 +18,7 @@ interface IGroupService {
 
   delete: (id: GroupId) => Promise<Group | undefined>;
 
-  addUsersToGroup: (id: GroupId, usersIds: UserId[]) => Promise<void>;
+  addUsersToGroup: (id: GroupId, usersIds: UserId[]) => Promise<Group>;
 }
 
 export type { IGroupService };

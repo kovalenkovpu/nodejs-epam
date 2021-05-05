@@ -35,7 +35,7 @@ groupRouter.delete(
 );
 
 groupRouter.post(
-  '/addUsers/:id',
+  '/:id/users',
   groupValidationMiddleware.validateGroupId,
   groupValidationMiddleware.validateGroupUsersIds,
   groupController.addUsersToGroup

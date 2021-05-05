@@ -36,7 +36,7 @@ interface IGroupController {
   ) => Promise<void | Response<string>>;
 
   addUsersToGroup: (
-    req: Request<GroupParams, any, AddUserToGroupRequestBody>,
+    req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
     res: Response<Group | string>
   ) => Promise<void | Response<string>>;
 }

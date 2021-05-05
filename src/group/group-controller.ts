@@ -85,8 +85,8 @@ class GroupController implements IGroupController {
   };
 
   addUsersToGroup = async (
-    req: Request<GroupParams, any, AddUserToGroupRequestBody>,
-    res: Response<string>
+    req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
+    res: Response<Group | string>
   ) => {
     try {
       const {
@@ -94,9 +94,9 @@ class GroupController implements IGroupController {
         body: { usersIds },
       } = req;
 
-      await groupService.addUsersToGroup(id, usersIds);
+      const updatedGroup = await groupService.addUsersToGroup(id, usersIds);
 
-      res.send(`Group with id: ${id} successfully updated`);
+      res.send(updatedGroup);
     } catch (error) {
       if (error.isNotFound) {
         return res.status(404).json(error.message);

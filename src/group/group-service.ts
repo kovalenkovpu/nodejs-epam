@@ -1,6 +1,7 @@
-import omit from 'lodash/omit';
-import { difference, isEmpty } from 'lodash';
 import { Op } from 'sequelize';
+import omit from 'lodash/omit';
+import difference from 'lodash/difference';
+import isEmpty from 'lodash/isEmpty';
 
 import { IGroupService } from './types/group-service.types';
 import { Group, GroupBase, GroupId } from './types/group-dto';

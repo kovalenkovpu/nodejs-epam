@@ -4,6 +4,8 @@ dotenv.config();
 
 import db from '../db/models';
 
+// Middlewares
+import { consoleLogger } from './common/middlewares/consoleLogger';
 // Routers
 import { userRouter } from './user/user-router';
 import { groupRouter } from './group/group-router';
@@ -11,6 +13,7 @@ import { groupRouter } from './group/group-router';
 const app = express();
 
 app.use(express.json());
+app.use('/', consoleLogger);
 app.use('/api/users', userRouter);
 app.use('/api/groups', groupRouter);
 

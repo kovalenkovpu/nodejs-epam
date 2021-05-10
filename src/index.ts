@@ -6,6 +6,10 @@ import db from '../db/models';
 
 // Loggers, errors middlewares
 import {
+  registerUncoughExceptionHandler,
+  registerUnhandledRejectionHandler,
+} from './common/utils';
+import {
   consoleLogger,
   serverErrorHandler,
   notFoundErrorHandler,
@@ -26,6 +30,8 @@ app.use(notFoundErrorHandler);
 app.use(serverErrorHandler);
 
 app.listen(process.env.PORT, async () => {
+  registerUncoughExceptionHandler();
+  registerUnhandledRejectionHandler();
   console.log(`Server is running on port ${process.env.PORT}`);
 
   await db.sequelize.authenticate();

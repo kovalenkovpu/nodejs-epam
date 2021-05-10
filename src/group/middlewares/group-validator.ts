@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 
 import { groupNameSchema, groupSchema } from './group-schema';
 
-import { formatError } from '../../common/utils/error-handling';
+import { formatError } from '../../common/utils';
 import {
   AddUserToGroupRequestBody,
   GroupParams,

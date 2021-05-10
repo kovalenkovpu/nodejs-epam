@@ -6,7 +6,7 @@ import isNumber from 'lodash/isNumber';
 
 import { userLoginSchema, userSchema } from './user-schema';
 
-import { formatError } from '../../common/utils/error-handling';
+import { formatError } from '../../common/utils';
 import { User, UserBase } from '../types/user-dto';
 import { UserParams } from '../types/user-controller.types';
 import dataBase from '../../../db/models';

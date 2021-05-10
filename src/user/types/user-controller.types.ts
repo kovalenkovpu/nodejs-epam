@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { UserBase, User, UserDTO, UserId } from './user-dto';
 
@@ -25,7 +25,8 @@ interface UserParams {
 interface IUserController {
   getAll: (
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
-    res: Response<User[]>
+    res: Response<User[]>,
+    next: NextFunction
   ) => Promise<void>;
 
   getAutoSuggestUsers: (
@@ -35,27 +36,32 @@ interface IUserController {
       undefined,
       AutosuggestUsersQueryParams
     >,
-    res: Response<AutosuggestUsersResponse>
+    res: Response<AutosuggestUsersResponse>,
+    next: NextFunction
   ) => Promise<void>;
 
   getOne: (
     req: Request<UserParams>,
-    res: Response<User | string>
-  ) => Promise<void | Response<string>>;
+    res: Response<User>,
+    next: NextFunction
+  ) => Promise<void>;
 
   create: (
     req: Request<any, User, UserBase>,
-    res: Response<User>
+    res: Response<User>,
+    next: NextFunction
   ) => Promise<void>;
 
   update: (
     req: Request<UserParams, User, UserBase>,
-    res: Response<User | string>
-  ) => Promise<void | Response<string>>;
+    res: Response<User>,
+    next: NextFunction
+  ) => Promise<void>;
 
   delete: (
     req: Request<UserParams>,
-    res: Response<User | string>
+    res: Response<string>,
+    next: NextFunction
   ) => Promise<void | Response<string>>;
 }
 

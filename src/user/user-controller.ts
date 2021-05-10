@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import {
   AutosuggestUsersQueryParams,
@@ -14,7 +14,8 @@ import { userService } from './user-service';
 class UserController implements IUserController {
   getAll = async (
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
-    res: Response<User[] | UserDTO[]>
+    res: Response<User[] | UserDTO[]>,
+    next: NextFunction
   ) => {
     try {
       let users: User[];
@@ -28,7 +29,7 @@ class UserController implements IUserController {
 
       res.send(users);
     } catch (error) {
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
@@ -39,7 +40,8 @@ class UserController implements IUserController {
       undefined,
       AutosuggestUsersQueryParams
     >,
-    res: Response<AutosuggestUsersResponse>
+    res: Response<AutosuggestUsersResponse>,
+    next: NextFunction
   ) => {
     try {
       const { loginSubstring, limit } = req.query;
@@ -50,38 +52,43 @@ class UserController implements IUserController {
 
       res.send(autosuggestedUsers);
     } catch (error) {
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
-  getOne = async (req: Request<UserParams>, res: Response<User | string>) => {
+  getOne = async (
+    req: Request<UserParams>,
+    res: Response<User>,
+    next: NextFunction
+  ) => {
     try {
       const { id } = req.params;
       const currentUser = await userService.getOne(id);
 
       res.send(currentUser);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
-  create = async (req: Request<any, User, UserBase>, res: Response<User>) => {
+  create = async (
+    req: Request<any, User, UserBase>,
+    res: Response<User>,
+    next: NextFunction
+  ) => {
     try {
       const user = await userService.create(req.body);
 
       res.send(user);
     } catch (error) {
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
   update = async (
     req: Request<UserParams, User, UserBase>,
-    res: Response<User | string>
+    res: Response<User>,
+    next: NextFunction
   ) => {
     try {
       const {
@@ -92,15 +99,15 @@ class UserController implements IUserController {
 
       res.send(updatedUser);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
-  delete = async (req: Request<UserParams>, res: Response<User | string>) => {
+  delete = async (
+    req: Request<UserParams>,
+    res: Response<string>,
+    next: NextFunction
+  ) => {
     try {
       const { id } = req.params;
 
@@ -108,11 +115,7 @@ class UserController implements IUserController {
 
       res.send(`User with id: ${id} successfully deleted`);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 }

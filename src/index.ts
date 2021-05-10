@@ -4,8 +4,12 @@ dotenv.config();
 
 import db from '../db/models';
 
-// Middlewares
-import { consoleLogger } from './common/middlewares/consoleLogger';
+// Loggers, errors middlewares
+import {
+  consoleLogger,
+  serverErrorHandler,
+  notFoundErrorHandler,
+} from './common/middlewares';
 // Routers
 import { userRouter } from './user/user-router';
 import { groupRouter } from './group/group-router';
@@ -13,9 +17,13 @@ import { groupRouter } from './group/group-router';
 const app = express();
 
 app.use(express.json());
-app.use('/', consoleLogger);
+app.use(consoleLogger);
+
 app.use('/api/users', userRouter);
 app.use('/api/groups', groupRouter);
+
+app.use(notFoundErrorHandler);
+app.use(serverErrorHandler);
 
 app.listen(process.env.PORT, async () => {
   console.log(`Server is running on port ${process.env.PORT}`);

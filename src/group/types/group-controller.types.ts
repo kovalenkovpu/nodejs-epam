@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { UserId } from '../../user/types/user-dto';
 
@@ -13,32 +13,41 @@ interface AddUserToGroupRequestBody {
 }
 
 interface IGroupController {
-  getAll: (req: Request<any, Group[]>, res: Response<Group[]>) => Promise<void>;
+  getAll: (
+    req: Request<any, Group[]>,
+    res: Response<Group[]>,
+    next: NextFunction
+  ) => Promise<void>;
 
   getOne: (
     req: Request<GroupParams>,
-    res: Response<Group | string>
-  ) => Promise<void | Response<string>>;
+    res: Response<Group>,
+    next: NextFunction
+  ) => Promise<void>;
 
   create: (
     req: Request<any, Group, GroupBase>,
-    res: Response<Group>
+    res: Response<Group>,
+    next: NextFunction
   ) => Promise<void>;
 
   update: (
     req: Request<GroupParams, Group, GroupBase>,
-    res: Response<Group | string>
-  ) => Promise<void | Response<string>>;
+    res: Response<Group>,
+    next: NextFunction
+  ) => Promise<void>;
 
   delete: (
     req: Request<GroupParams>,
-    res: Response<Group | string>
+    res: Response<string>,
+    next: NextFunction
   ) => Promise<void | Response<string>>;
 
   addUsersToGroup: (
     req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
-    res: Response<Group | string>
-  ) => Promise<void | Response<string>>;
+    res: Response<Group>,
+    next: NextFunction
+  ) => Promise<void>;
 }
 
 export type { IGroupController, GroupParams, AddUserToGroupRequestBody };

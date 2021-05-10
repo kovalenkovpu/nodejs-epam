@@ -1,5 +1,7 @@
 import { ValidationError } from 'joi';
 
+import { CustomError } from '../types/error-handling';
+
 const formatError = (error: ValidationError): string[] => {
   if (!error.isJoi) {
     return [error.message];
@@ -7,10 +9,6 @@ const formatError = (error: ValidationError): string[] => {
 
   return error.details.map(({ message }) => message);
 };
-
-interface CustomError extends Error {
-  isNotFound?: boolean;
-}
 
 const generateNotFoundError = (id: string, entity: string): CustomError => {
   const error: CustomError = new Error(`${entity} with id: ${id} not found`);

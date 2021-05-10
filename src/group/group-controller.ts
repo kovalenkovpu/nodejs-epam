@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import {
   IGroupController,
@@ -9,47 +9,53 @@ import { Group, GroupBase } from './types/group-dto';
 import { groupService } from './group-service';
 
 class GroupController implements IGroupController {
-  getAll = async (req: Request<any, Group[]>, res: Response<Group[]>) => {
+  getAll = async (
+    req: Request<any, Group[]>,
+    res: Response<Group[]>,
+    next: NextFunction
+  ) => {
     try {
       const groups = await groupService.getAll();
 
       res.send(groups);
     } catch (error) {
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
-  getOne = async (req: Request<GroupParams>, res: Response<Group | string>) => {
+  getOne = async (
+    req: Request<GroupParams>,
+    res: Response<Group>,
+    next: NextFunction
+  ) => {
     try {
       const { id } = req.params;
       const currentGroup = await groupService.getOne(id);
 
       res.send(currentGroup);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
   create = async (
     req: Request<any, Group, GroupBase>,
-    res: Response<Group>
+    res: Response<Group>,
+    next: NextFunction
   ) => {
     try {
       const group = await groupService.create(req.body);
 
       res.send(group);
     } catch (error) {
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
   update = async (
     req: Request<GroupParams, Group, GroupBase>,
-    res: Response<Group | string>
+    res: Response<Group>,
+    next: NextFunction
   ) => {
     try {
       const {
@@ -60,15 +66,15 @@ class GroupController implements IGroupController {
 
       res.send(updatedGroup);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
-  delete = async (req: Request<GroupParams>, res: Response<Group | string>) => {
+  delete = async (
+    req: Request<GroupParams>,
+    res: Response<string>,
+    next: NextFunction
+  ) => {
     try {
       const { id } = req.params;
 
@@ -76,17 +82,14 @@ class GroupController implements IGroupController {
 
       res.send(`Group with id: ${id} successfully deleted`);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 
   addUsersToGroup = async (
     req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
-    res: Response<Group | string>
+    res: Response<Group>,
+    next: NextFunction
   ) => {
     try {
       const {
@@ -98,11 +101,7 @@ class GroupController implements IGroupController {
 
       res.send(updatedGroup);
     } catch (error) {
-      if (error.isNotFound) {
-        return res.status(404).json(error.message);
-      }
-
-      res.status(500).json(error);
+      return next(error);
     }
   };
 }

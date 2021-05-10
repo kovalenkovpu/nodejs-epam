@@ -11,7 +11,7 @@
     "start": "npm run db:migrate && npm run db:seed && node ./dist/src/index.js",
     "start:dev": "npm run db:migrate && npm run db:seed && nodemon ./src/index.ts",
     "build": "tsc --build",
-    "heroku:promote": "git push heroku TASK4-second-entity-and-many-to-many:main",
+    "heroku:promote": "git push heroku TASK5-loggin-and-error-handling:main",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "npx sequelize-cli db:seed:all",
     "tslint": "tsc --noEmit",

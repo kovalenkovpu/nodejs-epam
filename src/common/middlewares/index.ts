@@ -1,3 +1,3 @@
-export { consoleLogger } from './consoleLogger';
-export { notFoundErrorHandler } from './notFoundErrorHandler';
-export { serverErrorHandler } from './serverErrorHandler';
+export { consoleLogger } from './console-logger';
+export { notFoundErrorHandler } from './not-found-error-handler';
+export { serverErrorHandler } from './server-error-handler';

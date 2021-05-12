@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { controllerErrorLogger } from '../common/utils';
+
 import {
   AutosuggestUsersQueryParams,
   AutosuggestUsersResponse,
@@ -29,6 +31,13 @@ class UserController implements IUserController {
 
       res.send(users);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'getAll',
+        args: req.query,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -52,6 +61,13 @@ class UserController implements IUserController {
 
       res.send(autosuggestedUsers);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'getAutoSuggestUsers',
+        args: req.query,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -67,6 +83,13 @@ class UserController implements IUserController {
 
       res.send(currentUser);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'getOne',
+        args: req.params,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -81,6 +104,13 @@ class UserController implements IUserController {
 
       res.send(user);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'create',
+        args: req.body,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -99,6 +129,13 @@ class UserController implements IUserController {
 
       res.send(updatedUser);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'update',
+        args: { params: req.params, body: req.body },
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -115,6 +152,13 @@ class UserController implements IUserController {
 
       res.send(`User with id: ${id} successfully deleted`);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'UserController',
+        methodName: 'delete',
+        args: req.params,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };

@@ -1,3 +1,4 @@
+export { controllerErrorLogger } from './controller-error-logger';
 export { formatError, generateNotFoundError } from './error-handling';
 export { registerUncoughExceptionHandler } from './uncaught-exception-handler';
 // prettier-ignore

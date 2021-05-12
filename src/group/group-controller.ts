@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { controllerErrorLogger } from '../common/utils';
+
 import {
   IGroupController,
   GroupParams,
@@ -19,6 +21,13 @@ class GroupController implements IGroupController {
 
       res.send(groups);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'getAll',
+        args: req.query,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -34,6 +43,13 @@ class GroupController implements IGroupController {
 
       res.send(currentGroup);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'getOne',
+        args: req.params,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -48,6 +64,13 @@ class GroupController implements IGroupController {
 
       res.send(group);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'create',
+        args: req.body,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -66,6 +89,13 @@ class GroupController implements IGroupController {
 
       res.send(updatedGroup);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'update',
+        args: { params: req.params, body: req.body },
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -82,6 +112,13 @@ class GroupController implements IGroupController {
 
       res.send(`Group with id: ${id} successfully deleted`);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'delete',
+        args: req.params,
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };
@@ -101,6 +138,13 @@ class GroupController implements IGroupController {
 
       res.send(updatedGroup);
     } catch (error) {
+      controllerErrorLogger({
+        controllerName: 'GroupController',
+        methodName: 'addUsersToGroup',
+        args: { params: req.params, body: req.body },
+        errorMessage: error.message,
+      });
+
       return next(error);
     }
   };

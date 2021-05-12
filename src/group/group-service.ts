@@ -1,16 +1,16 @@
-import { Op } from 'sequelize';
-import omit from 'lodash/omit';
 import difference from 'lodash/difference';
 import isEmpty from 'lodash/isEmpty';
+import omit from 'lodash/omit';
+import { Op } from 'sequelize';
 
-import { IGroupService } from './types/group-service.types';
-import { Group, GroupBase, GroupId } from './types/group-dto';
-import { GroupInstance } from './types/group-model.types';
-
+import dataBase from '../../db/models';
 import { IDataBase } from '../common/types/db-types';
 import { generateNotFoundError } from '../common/utils/error-handling';
-import dataBase from '../../db/models';
 import { UserId } from '../user/types/user-dto';
+
+import { Group, GroupBase, GroupId } from './types/group-dto';
+import { GroupInstance } from './types/group-model.types';
+import { IGroupService } from './types/group-service.types';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;

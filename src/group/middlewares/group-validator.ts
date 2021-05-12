@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
-import last from 'lodash/last';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
+import last from 'lodash/last';
 
-import { groupNameSchema, groupSchema } from './group-schema';
-
+import dataBase from '../../../db/models';
+import { uuidv4Schema } from '../../common/schemas';
+import { IDataBase } from '../../common/types/db-types';
 import { formatError } from '../../common/utils';
 import {
   AddUserToGroupRequestBody,
   GroupParams,
 } from '../types/group-controller.types';
 import { Group, GroupBase } from '../types/group-dto';
-import dataBase from '../../../db/models';
-import { IDataBase } from '../../common/types/db-types';
-import { uuidv4Schema } from '../../common/schemas';
+
+import { groupNameSchema, groupSchema } from './group-schema';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;

@@ -1,14 +1,14 @@
-import { Op } from 'sequelize';
 import omit from 'lodash/omit';
-
-import { IUserService } from './types/user-service.types';
-import { UserBase, User, UserId } from './types/user-dto';
-import { AutosuggestUsersResponse } from './types/user-controller.types';
-import { UserInstance } from './types/user-model.types';
+import { Op } from 'sequelize';
 
 import dataBase from '../../db/models';
 import { IDataBase } from '../common/types/db-types';
 import { generateNotFoundError } from '../common/utils/error-handling';
+
+import { AutosuggestUsersResponse } from './types/user-controller.types';
+import { UserBase, User, UserId } from './types/user-dto';
+import { UserInstance } from './types/user-model.types';
+import { IUserService } from './types/user-service.types';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;

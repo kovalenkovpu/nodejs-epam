@@ -1,4 +1,5 @@
 import { Dictionary } from 'lodash';
+
 import { logger } from './logger';
 
 const controllerErrorLogger = ({

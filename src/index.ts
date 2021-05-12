@@ -1,22 +1,23 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
+
 dotenv.config();
 
 import db from '../db/models';
 
 // Loggers, errors middlewares
 import {
-  registerUncoughExceptionHandler,
-  registerUnhandledRejectionHandler,
-} from './common/utils';
-import {
   consoleLogger,
   serverErrorHandler,
   notFoundErrorHandler,
 } from './common/middlewares';
+import {
+  registerUncoughExceptionHandler,
+  registerUnhandledRejectionHandler,
+} from './common/utils';
 // Routers
-import { userRouter } from './user/user-router';
 import { groupRouter } from './group/group-router';
+import { userRouter } from './user/user-router';
 
 const app = express();
 

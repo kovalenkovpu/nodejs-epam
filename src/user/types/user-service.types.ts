@@ -1,7 +1,7 @@
+import { IDataBase } from '../../common/types/db-types';
+
 import { AutosuggestUsersResponse } from './user-controller.types';
 import { UserBase, User, UserId } from './user-dto';
-
-import { IDataBase } from '../../common/types/db-types';
 
 interface IUserService {
   userModel: IDataBase['User'];

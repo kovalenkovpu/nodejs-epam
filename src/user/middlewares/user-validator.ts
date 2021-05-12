@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
-import last from 'lodash/last';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import isNumber from 'lodash/isNumber';
+import last from 'lodash/last';
+
+import dataBase from '../../../db/models';
+import { uuidv4Schema } from '../../common/schemas';
+import { IDataBase } from '../../common/types/db-types';
+import { formatError } from '../../common/utils';
+import { UserParams } from '../types/user-controller.types';
+import { User, UserBase } from '../types/user-dto';
 
 import { userLoginSchema, userSchema } from './user-schema';
-
-import { formatError } from '../../common/utils';
-import { User, UserBase } from '../types/user-dto';
-import { UserParams } from '../types/user-controller.types';
-import dataBase from '../../../db/models';
-import { IDataBase } from '../../common/types/db-types';
-import { uuidv4Schema } from '../../common/schemas';
 
 // Dirty hack to make JS work with TS and preserve typings
 const db = (dataBase as unknown) as IDataBase;

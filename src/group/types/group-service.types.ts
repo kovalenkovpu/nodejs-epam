@@ -1,7 +1,7 @@
-import { Group, GroupBase, GroupId } from './group-dto';
-
 import { IDataBase } from '../../common/types/db-types';
 import { UserId } from '../../user/types/user-dto';
+
+import { Group, GroupBase, GroupId } from './group-dto';
 
 interface IGroupService {
   sequelize: IDataBase['sequelize'];

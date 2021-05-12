@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from 'express';
 
 import { controllerErrorLogger } from '../common/utils';
 
+import { groupService } from './group-service';
 import {
   IGroupController,
   GroupParams,
   AddUserToGroupRequestBody,
 } from './types/group-controller.types';
 import { Group, GroupBase } from './types/group-dto';
-import { groupService } from './group-service';
 
 class GroupController implements IGroupController {
   getAll = async (

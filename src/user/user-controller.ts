@@ -10,7 +10,7 @@ import {
   UserParams,
   WITH_COMPLETE_DATA,
 } from './types/user-controller.types';
-import { UserBase, User, UserDTO } from './types/user-dto';
+import { User, UserBase, UserDTO } from './types/user-dto';
 import { userService } from './user-service';
 
 class UserController implements IUserController {

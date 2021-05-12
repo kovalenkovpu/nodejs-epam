@@ -14,9 +14,10 @@
     "heroku:promote": "git push heroku TASK5-loggin-and-error-handling:main",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "npx sequelize-cli db:seed:all",
+    "format:check": "prettier --check .",
     "tslint": "tsc --noEmit",
     "lint": "eslint --ext .ts src --color",
-    "lint:all": "npm run tslint & npm run lint"
+    "lint:all": "npm run tslint && npm run lint && npm run format:check"
   },
   "license": "ISC",
   "devDependencies": {
@@ -29,6 +30,8 @@
     "@typescript-eslint/parser": "^4.19.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1",

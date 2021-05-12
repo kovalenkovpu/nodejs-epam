@@ -7,6 +7,8 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/typescript",
     "plugin:prettier/recommended"
   ],
   "env": {
@@ -17,6 +19,26 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "ignoreRestSiblings": true }
+    ],
+    "import/exports-last": 2,
+    "import/group-exports": 2,
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "caseInsensitive": true,
+          "order": "asc"
+        },
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always"
+      }
     ],
     "no-debugger": 1,
     "comma-dangle": [0, "never"],

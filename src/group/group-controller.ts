@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { controllerErrorLogger } from '../common/utils';
+import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
 
 import { groupService } from './group-service';
 import {
@@ -11,11 +11,12 @@ import {
 import { Group, GroupBase } from './types/group-dto';
 
 class GroupController implements IGroupController {
-  getAll = async (
+  @executionTimeTracker()
+  async getAll(
     req: Request<any, Group[]>,
     res: Response<Group[]>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const groups = await groupService.getAll();
 
@@ -30,13 +31,14 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 
-  getOne = async (
+  @executionTimeTracker()
+  async getOne(
     req: Request<GroupParams>,
     res: Response<Group>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const { id } = req.params;
       const currentGroup = await groupService.getOne(id);
@@ -52,13 +54,14 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 
-  create = async (
+  @executionTimeTracker()
+  async create(
     req: Request<any, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const group = await groupService.create(req.body);
 
@@ -73,13 +76,14 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 
-  update = async (
+  @executionTimeTracker()
+  async update(
     req: Request<GroupParams, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const {
         params: { id },
@@ -98,13 +102,14 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 
-  delete = async (
+  @executionTimeTracker()
+  async delete(
     req: Request<GroupParams>,
     res: Response<string>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const { id } = req.params;
 
@@ -121,13 +126,14 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 
-  addUsersToGroup = async (
+  @executionTimeTracker()
+  async addUsersToGroup(
     req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
     res: Response<Group>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const {
         params: { id },
@@ -147,7 +153,7 @@ class GroupController implements IGroupController {
 
       return next(error);
     }
-  };
+  }
 }
 
 const groupController = new GroupController();

@@ -1,5 +1,3 @@
-import { Dictionary } from 'lodash';
-
 import { logger } from './logger';
 
 const controllerErrorLogger = ({
@@ -10,10 +8,9 @@ const controllerErrorLogger = ({
 }: {
   controllerName: string;
   methodName: string;
-  args: Dictionary<any>;
+  args: Record<string, any>;
   errorMessage: string;
 }): void => {
-  console.log('HHHHHHEEEEEY!');
   logger.log(
     'error',
     '"%s" error. Method name: "%s", message: "%s", arguments: "%o"',

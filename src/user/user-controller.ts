@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { controllerErrorLogger } from '../common/utils';
+import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
 
 import {
   AutosuggestUsersQueryParams,
@@ -14,11 +14,12 @@ import { User, UserBase, UserDTO } from './types/user-dto';
 import { userService } from './user-service';
 
 class UserController implements IUserController {
-  getAll = async (
+  @executionTimeTracker()
+  async getAll(
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[] | UserDTO[]>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       let users: User[];
       const { withCompleteData } = req.query;
@@ -40,9 +41,10 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 
-  getAutoSuggestUsers = async (
+  @executionTimeTracker()
+  async getAutoSuggestUsers(
     req: Request<
       any,
       AutosuggestUsersResponse,
@@ -51,7 +53,7 @@ class UserController implements IUserController {
     >,
     res: Response<AutosuggestUsersResponse>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const { loginSubstring, limit } = req.query;
       const autosuggestedUsers = await userService.getAutoSuggestUsers(
@@ -70,13 +72,14 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 
-  getOne = async (
+  @executionTimeTracker()
+  async getOne(
     req: Request<UserParams>,
     res: Response<User>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const { id } = req.params;
       const currentUser = await userService.getOne(id);
@@ -92,13 +95,14 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 
-  create = async (
+  @executionTimeTracker()
+  async create(
     req: Request<any, User, UserBase>,
     res: Response<User>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const user = await userService.create(req.body);
 
@@ -113,13 +117,14 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 
-  update = async (
+  @executionTimeTracker()
+  async update(
     req: Request<UserParams, User, UserBase>,
     res: Response<User>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const {
         params: { id },
@@ -138,13 +143,14 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 
-  delete = async (
+  @executionTimeTracker()
+  async delete(
     req: Request<UserParams>,
     res: Response<string>,
     next: NextFunction
-  ) => {
+  ) {
     try {
       const { id } = req.params;
 
@@ -161,7 +167,7 @@ class UserController implements IUserController {
 
       return next(error);
     }
-  };
+  }
 }
 
 const userController = new UserController();

@@ -1,4 +1,10 @@
-const environment = process.env.NODE_ENV || 'development';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const isPerformanceTrackingEnabled = process.env.PERF_TRACK === 'true';
+
+const yellowFontColor = '\x1b[33m%s\x1b[0m';
 
 const executionTimeTracker = (): MethodDecorator => {
   return (
@@ -8,7 +14,7 @@ const executionTimeTracker = (): MethodDecorator => {
   ) => {
     const originalMethod = descriptor.value;
 
-    if (environment !== 'production') {
+    if (isPerformanceTrackingEnabled) {
       descriptor.value = async function decoratedOriginalMethod(
         ...args: any[]
       ) {
@@ -18,7 +24,7 @@ const executionTimeTracker = (): MethodDecorator => {
         const executionTime = `time: ${sec}s ${ms / 10e6}ms`;
 
         console.log(
-          '\x1b[33m%s\x1b[0m',
+          yellowFontColor,
           // eslint-disable-next-line max-len
           `[EXECUTION TIME] ${executionTime}, method: ${propertyName.toString()}`
         );

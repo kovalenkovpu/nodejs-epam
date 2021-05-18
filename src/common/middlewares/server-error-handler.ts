@@ -9,10 +9,7 @@ const serverErrorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ): Response => {
-  logger.log({
-    level: 'error',
-    message: 'Internal Server Error',
-  });
+  logger.log('error', 'Internal Server Error. Stacktrace: "%s"', error.stack);
 
   return res.status(500).json(error.message);
 };

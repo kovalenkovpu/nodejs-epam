@@ -6,8 +6,6 @@ const registerUncoughExceptionHandler = (): void => {
       level: 'error',
       message: `Uncaught Exception: ${err.message}`,
     });
-
-    process.exit(1);
   });
 };
 

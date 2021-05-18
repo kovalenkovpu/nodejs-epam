@@ -6,8 +6,6 @@ const registerUnhandledRejectionHandler = (): void => {
       level: 'error',
       message: `Unhandled Rejection at: ${promise}, reason: ${reason}`,
     });
-
-    process.exit(1);
   });
 };
 

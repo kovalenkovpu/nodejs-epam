@@ -4,20 +4,22 @@ const controllerErrorLogger = ({
   controllerName,
   methodName,
   args,
-  errorMessage,
+  error,
 }: {
   controllerName: string;
   methodName: string;
   args: Record<string, any>;
-  errorMessage: string;
+  error: Error;
 }): void => {
   logger.log(
     'error',
-    '"%s" error. Method name: "%s", message: "%s", arguments: "%o"',
+    // eslint-disable-next-line max-len
+    '"%s" error. Method name: "%s", arguments: "%o", message: "%s", stacktrace: "%s"',
     controllerName,
     methodName,
-    errorMessage,
-    args
+    args,
+    error.message,
+    error.stack
   );
 };
 

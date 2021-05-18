@@ -26,7 +26,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'getAll',
         args: req.query,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -49,7 +49,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'getOne',
         args: req.params,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -71,7 +71,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'create',
         args: req.body,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -97,7 +97,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'update',
         args: { params: req.params, body: req.body },
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -121,7 +121,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'delete',
         args: req.params,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -148,7 +148,7 @@ class GroupController implements IGroupController {
         controllerName: 'GroupController',
         methodName: 'addUsersToGroup',
         args: { params: req.params, body: req.body },
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);

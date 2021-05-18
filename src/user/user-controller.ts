@@ -36,7 +36,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'getAll',
         args: req.query,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -67,7 +67,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'getAutoSuggestUsers',
         args: req.query,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -90,7 +90,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'getOne',
         args: req.params,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -112,7 +112,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'create',
         args: req.body,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -138,7 +138,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'update',
         args: { params: req.params, body: req.body },
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);
@@ -162,7 +162,7 @@ class UserController implements IUserController {
         controllerName: 'UserController',
         methodName: 'delete',
         args: req.params,
-        errorMessage: error.message,
+        error,
       });
 
       return next(error);

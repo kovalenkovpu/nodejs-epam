@@ -12,11 +12,13 @@ const consoleLogger = (
     .map(([key, value]) => `${key}=${value}`)
     .join();
 
-  console.log(cyanFontColor, `[consoleLogger] Request: ${method} ${path}`);
+  let log = `[consoleLogger] Request: ${method} ${path}`;
 
   if (queryParamsString) {
-    console.log(cyanFontColor, `[consoleLogger] Params: ${queryParamsString}`);
+    log = log.concat(` Params: ${queryParamsString}`);
   }
+
+  console.log(cyanFontColor, log);
 
   return next();
 };

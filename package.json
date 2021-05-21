@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "npm run db:migrate && npm run db:seed && node ./dist/src/index.js",
-    "start:dev": "npm run db:migrate && npm run db:seed && nodemon ./src/index.ts",
+    "start:dev": "nodemon ./src/index.ts",
+    "start:dev:migrate": "npm run db:migrate && npm run db:seed && nodemon ./src/index.ts",
     "build": "tsc --build",
     "heroku:promote": "git push heroku TASK5-loggin-and-error-handling:main",
     "db:migrate": "npx sequelize-cli db:migrate",

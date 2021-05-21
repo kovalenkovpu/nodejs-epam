@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 import { UserLogin, UserPassword } from '../../user/types/user-dto';
 
@@ -10,8 +10,7 @@ interface AuthData {
 interface ILoginController {
   login: (
     req: Request<unknown, unknown, AuthData>,
-    res: Response,
-    next: NextFunction
+    res: Response
   ) => Promise<void>;
 }
 

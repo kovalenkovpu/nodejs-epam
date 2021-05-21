@@ -10,6 +10,7 @@ import {
   consoleLogger,
   serverErrorHandler,
   notFoundErrorHandler,
+  authGuard,
 } from './common/middlewares';
 import {
   registerUncoughExceptionHandler,
@@ -26,8 +27,8 @@ app.use(express.json());
 app.use(consoleLogger);
 
 app.use('/api/login', loginRouter);
-app.use('/api/users', userRouter);
-app.use('/api/groups', groupRouter);
+app.use('/api/users', authGuard, userRouter);
+app.use('/api/groups', authGuard, groupRouter);
 
 app.use(notFoundErrorHandler);
 app.use(serverErrorHandler);

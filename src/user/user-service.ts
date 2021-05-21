@@ -83,11 +83,15 @@ class UserService implements IUserService {
 
   findOneByCredentials = async ({ login, password }: AuthData) => {
     const user = await this.userModel.findOne({
-      where: { login, password, isDeleted: false },
+      where: { login, isDeleted: false },
     });
 
     if (!user) {
-      return Promise.reject(generateNotFoundError('unknown', 'User'));
+      return Promise.reject(generateNotFoundError('', 'User'));
+    }
+
+    if (user.password !== password) {
+      return Promise.reject(new Error());
     }
 
     return this.getUserFromUserInstance(user);

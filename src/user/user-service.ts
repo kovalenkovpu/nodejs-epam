@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 import dataBase from '../../db/models';
 import { IDataBase } from '../common/types/db-types';
 import { generateNotFoundError } from '../common/utils/error-handling';
+import { AuthData } from '../login/types/login-controller.types';
 
 import { AutosuggestUsersResponse } from './types/user-controller.types';
 import { UserBase, User, UserId } from './types/user-dto';
@@ -75,6 +76,18 @@ class UserService implements IUserService {
 
     if (!user) {
       return Promise.reject(generateNotFoundError(id, 'User'));
+    }
+
+    return this.getUserFromUserInstance(user);
+  };
+
+  findOneByCredentials = async ({ login, password }: AuthData) => {
+    const user = await this.userModel.findOne({
+      where: { login, password, isDeleted: false },
+    });
+
+    if (!user) {
+      return Promise.reject(generateNotFoundError('unknown', 'User'));
     }
 
     return this.getUserFromUserInstance(user);

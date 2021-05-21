@@ -17,6 +17,7 @@ import {
 } from './common/utils';
 // Routers
 import { groupRouter } from './group/group-router';
+import { loginRouter } from './login/login-router';
 import { userRouter } from './user/user-router';
 
 const app = express();
@@ -24,6 +25,7 @@ const app = express();
 app.use(express.json());
 app.use(consoleLogger);
 
+app.use('/api/login', loginRouter);
 app.use('/api/users', userRouter);
 app.use('/api/groups', groupRouter);
 

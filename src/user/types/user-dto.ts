@@ -1,7 +1,10 @@
 // Receive from FE
+type UserLogin = string;
+type UserPassword = string;
+
 interface UserBase {
-  login: string;
-  password: string;
+  login: UserLogin;
+  password: UserPassword;
   age: number;
 }
 
@@ -18,4 +21,4 @@ interface UserDTO extends UserBase {
 // Send to FE
 type User = Omit<UserDTO, 'isDeleted' | 'createdAt' | 'updatedAt'>;
 
-export type { UserBase, UserDTO, User, UserId };
+export type { UserLogin, UserPassword, UserBase, UserDTO, User, UserId };

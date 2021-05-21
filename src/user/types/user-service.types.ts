@@ -1,4 +1,5 @@
 import { IDataBase } from '../../common/types/db-types';
+import { AuthData } from '../../login/types/login-controller.types';
 
 import { AutosuggestUsersResponse } from './user-controller.types';
 import { UserBase, User, UserId } from './user-dto';
@@ -16,6 +17,8 @@ interface IUserService {
   ) => Promise<AutosuggestUsersResponse>;
 
   getOne: (id: UserId) => Promise<User | undefined>;
+
+  findOneByCredentials: (authData: AuthData) => Promise<User | undefined>;
 
   create: (user: UserBase) => Promise<User | undefined>;
 

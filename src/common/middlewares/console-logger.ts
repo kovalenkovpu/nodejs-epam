@@ -11,9 +11,9 @@ const consoleLogger = (
   const queryParamsString = Object.entries(query)
     .map(([key, value]) => `${key}=${value}`)
     .join();
-  const date = new Date().toISOString();
+  const timestamp = new Date().toISOString();
 
-  let log = `${date} [consoleLogger] Request: ${method} ${path}`;
+  let log = `${timestamp} [consoleLogger] Request: ${method} ${path}`;
 
   if (queryParamsString) {
     log = log.concat(` Params: ${queryParamsString}`);

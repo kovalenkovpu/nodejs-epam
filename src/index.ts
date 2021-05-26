@@ -1,3 +1,4 @@
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -23,6 +24,7 @@ import { userRouter } from './user/user-router';
 
 const app = express();
 
+app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(consoleLogger);
 

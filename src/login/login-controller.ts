@@ -12,7 +12,7 @@ class LoginController implements ILoginController {
     try {
       const user = await userService.findOneByCredentials(req.body);
       const payload = { sub: user.id };
-      const token = jwt.sign(payload, secret, { expiresIn: 60 });
+      const token = jwt.sign(payload, secret, { expiresIn: 300 });
 
       res.setHeader('x-access-token', token);
       res.send({ success: true, message: token });

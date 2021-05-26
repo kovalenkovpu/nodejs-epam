@@ -35,7 +35,7 @@ app.use('/api/groups', authGuard, groupRouter);
 app.use(notFoundErrorHandler);
 app.use(serverErrorHandler);
 
-app.listen(process.env.PORT, async () => {
+const server = app.listen(process.env.PORT, async () => {
   registerUncoughExceptionHandler();
   registerUnhandledRejectionHandler();
   console.log(`Server is running on port ${process.env.PORT}`);
@@ -48,4 +48,13 @@ app.listen(process.env.PORT, async () => {
   */
 
   console.log('Connection to DB has been established successfully.');
+});
+
+process.on('SIGTERM', () => {
+  console.info('SIGTERM signal received.');
+  console.log('Closing http server.');
+
+  server.close(() => {
+    console.log('Http server closed.');
+  });
 });

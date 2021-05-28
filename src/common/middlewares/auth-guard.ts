@@ -4,7 +4,11 @@ import jwt from 'jsonwebtoken';
 const secret = String(process.env.SECRET);
 const JWT_EXPIRED_MESSAGE = 'jwt expired';
 
-const authGuard = (req: Request, res: Response, next: NextFunction) => {
+const authGuard = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void | Response => {
   const token = req.headers['x-access-token'] as string | undefined;
 
   if (token) {

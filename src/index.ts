@@ -25,9 +25,7 @@ import { userRouter } from './user/user-router';
 const app = express();
 
 const origin =
-  process.env.NODE_ENV === 'production'
-    ? 'https://nodejs-epam.herokuapp.com'
-    : true;
+  process.env.NODE_ENV === 'production' ? process.env.ENV_URL : true;
 
 app.use(cors({ origin }));
 app.use(express.json());

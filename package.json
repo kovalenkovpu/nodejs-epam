@@ -8,7 +8,7 @@
     "node": "14.16.0"
   },
   "scripts": {
-    "start": "npm run db:migrate && npm run db:seed && node ./dist/src/index.js",
+    "start": "npm run db:migrate && node ./dist/src/index.js",
     "start:dev": "nodemon ./src/index.ts",
     "start:dev:migrate": "npm run db:migrate && npm run db:seed && nodemon ./src/index.ts",
     "build": "tsc --build",

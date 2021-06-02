@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 const secret = String(process.env.SECRET);
-const JWT_EXPIRED_MESSAGE = 'jwt expired';
 
 const authGuard = (
   req: Request,
@@ -17,15 +16,10 @@ const authGuard = (
 
       return next();
     } catch (error) {
-      if (error.message === JWT_EXPIRED_MESSAGE) {
-        return res.status(403).json({
-          success: false,
-          message: 'Your token expired. Please login again.',
-        });
-      }
-
-      // TODO: make consistent
-      return res.sendStatus(403);
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorised. Please login.',
+      });
     }
   } else {
     return res.sendStatus(401);

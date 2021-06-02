@@ -1,10 +1,14 @@
 import express from 'express';
 
 import { loginController } from './login-controller';
+import * as loginValidationMiddleware from './middlewares/login-validator';
 
 const loginRouter = express.Router();
 
-// TODO: add validation
-loginRouter.post('/', loginController.login);
+loginRouter.post(
+  '/',
+  loginValidationMiddleware.validateLogin,
+  loginController.login
+);
 
 export { loginRouter };

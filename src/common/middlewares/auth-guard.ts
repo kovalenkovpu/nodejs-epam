@@ -18,12 +18,13 @@ const authGuard = (
       return next();
     } catch (error) {
       if (error.message === JWT_EXPIRED_MESSAGE) {
-        return res.status(401).json({
+        return res.status(403).json({
           success: false,
-          message: 'Your session expired. Please login again.',
+          message: 'Your token expired. Please login again.',
         });
       }
 
+      // TODO: make consistent
       return res.sendStatus(403);
     }
   } else {

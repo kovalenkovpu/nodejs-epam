@@ -17,4 +17,4 @@ interface GroupDTO extends GroupBase {
 
 type Group = Omit<GroupDTO, 'createdAt' | 'updatedAt'>;
 
-export type { GroupId, GroupBase, GroupDTO, Group };
+export type { Permission, GroupId, GroupBase, GroupDTO, Group };

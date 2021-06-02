@@ -6,15 +6,11 @@ import last from 'lodash/last';
 
 import dataBase from '../../../db/models';
 import { uuidv4Schema } from '../../common/schemas';
-import { IDataBase } from '../../common/types/db-types';
 import { formatError } from '../../common/utils';
 import { UserParams } from '../types/user-controller.types';
 import { User, UserBase } from '../types/user-dto';
 
 import { userLoginSchema, userSchema } from './user-schema';
-
-// Dirty hack to make JS work with TS and preserve typings
-const db = (dataBase as unknown) as IDataBase;
 
 const validateUserId = async (
   req: Request<UserParams>,
@@ -65,7 +61,7 @@ const validateUserUniqueCreate = async (
   try {
     const { body: newUser } = req;
     // TODO: think over how to make this external validation some other way
-    const existingUsersInstances = await db.User.findAll();
+    const existingUsersInstances = await dataBase.User.findAll();
     const existingUsers = existingUsersInstances.map((user) => user.get());
 
     const validatedUsers = await userLoginSchema.validateAsync(
@@ -96,7 +92,7 @@ const validateUserUniqueUpdate = async (
       params: { id },
     } = req;
     // TODO: think over how to make this external validation some other way
-    const existingUsersInstances = await db.User.findAll();
+    const existingUsersInstances = await dataBase.User.findAll();
     let existingUsers = existingUsersInstances.map((user) => user.get());
     const existingUser = find(existingUsers, { id });
 

@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+// import { injectable } from 'inversify';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
+// import { myContainer } from '../inversify.config';
+// import { TYPES } from '../types';
 
 import {
   AutosuggestUsersQueryParams,
@@ -11,8 +14,12 @@ import {
   WITH_COMPLETE_DATA,
 } from './types/user-controller.types';
 import { User, UserBase, UserDTO } from './types/user-dto';
+// import { IUserService } from './types/user-service.types';
 import { userService } from './user-service';
 
+// const userService = myContainer.get<IUserService>(TYPES.UserService);
+
+// @injectable()
 class UserController implements IUserController {
   @executionTimeTracker()
   async getAll(

@@ -1,4 +1,4 @@
-import { IDataBase } from '../../common/types/db-types';
+import { IDataBase } from '../../../db/models/types';
 import { AuthData } from '../../login/types/login-controller.types';
 
 import { AutosuggestUsersResponse } from './user-controller.types';

@@ -1,27 +1,32 @@
+// import { injectable, inject } from 'inversify';
 import omit from 'lodash/omit';
 import { Op } from 'sequelize';
 
 import dataBase from '../../db/models';
-import { IDataBase } from '../common/types/db-types';
+import 'reflect-metadata';
+import { IDataBase } from '../../db/models/types';
+import { User } from '../../db/models/user';
 import { generateNotFoundError } from '../common/utils/error-handling';
 import { AuthData } from '../login/types/login-controller.types';
+// import { TYPES } from '../types';
 
 import { AutosuggestUsersResponse } from './types/user-controller.types';
-import { UserBase, User, UserId } from './types/user-dto';
-import { UserInstance } from './types/user-model.types';
+import { UserBase, UserId } from './types/user-dto';
 import { IUserService } from './types/user-service.types';
 
-// Dirty hack to make JS work with TS and preserve typings
-const db = (dataBase as unknown) as IDataBase;
-
+// @injectable()
 class UserService implements IUserService {
   userModel: IDataBase['User'];
 
-  constructor(dbInstance: IDataBase) {
+  constructor(
+    dbInstance: IDataBase
+    // @inject(TYPES.UserModel) userModel: IDataBase['User']
+  ) {
     this.userModel = dbInstance.User;
+    // this.userModel = userModel;
   }
 
-  private getUserFromUserInstance = (userInstance: UserInstance): User =>
+  private getUserFromUserInstance = (userInstance: User) =>
     omit(userInstance.get(), ['isDeleted', 'createdAt', 'updatedAt']);
 
   getAll = async () => {
@@ -145,6 +150,6 @@ class UserService implements IUserService {
   };
 }
 
-const userService = new UserService(db);
+const userService = new UserService(dataBase);
 
 export { userService };

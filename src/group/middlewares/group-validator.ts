@@ -5,7 +5,6 @@ import last from 'lodash/last';
 
 import dataBase from '../../../db/models';
 import { uuidv4Schema } from '../../common/schemas';
-import { IDataBase } from '../../common/types/db-types';
 import { formatError } from '../../common/utils';
 import {
   AddUserToGroupRequestBody,
@@ -14,9 +13,6 @@ import {
 import { Group, GroupBase } from '../types/group-dto';
 
 import { groupNameSchema, groupSchema } from './group-schema';
-
-// Dirty hack to make JS work with TS and preserve typings
-const db = (dataBase as unknown) as IDataBase;
 
 const validateGroupId = async (
   req: Request<GroupParams>,
@@ -98,7 +94,7 @@ const validateGroupUniqueCreate = async (
   try {
     const { body: newGroup } = req;
     // TODO: think over how to make this external validation some other way
-    const existingGroupsInstances = await db.Group.findAll();
+    const existingGroupsInstances = await dataBase.Group.findAll();
     const existingGroups = existingGroupsInstances.map((group) => group.get());
 
     const validatedGroups = await groupNameSchema.validateAsync(
@@ -129,7 +125,7 @@ const validateGroupUniqueUpdate = async (
       params: { id },
     } = req;
     // TODO: think over how to make this external validation some other way
-    const existingGroupsInstances = await db.Group.findAll();
+    const existingGroupsInstances = await dataBase.Group.findAll();
     let existingGroups = existingGroupsInstances.map((group) => group.get());
     const existingGroup = find(existingGroups, { id });
 

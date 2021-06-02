@@ -1,4 +1,5 @@
-import { IDataBase } from '../../common/types/db-types';
+// import { IDataBase } from '../../common/types/db-types';
+import { IDataBase } from '../../../db/models/types';
 import { UserId } from '../../user/types/user-dto';
 
 import { Group, GroupBase, GroupId } from './group-dto';

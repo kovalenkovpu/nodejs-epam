@@ -1,3 +1,6 @@
+require('babel-register');
+require('ts-node');
+
 require('dotenv').config();
 
 module.exports = {

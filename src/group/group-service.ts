@@ -4,16 +4,13 @@ import omit from 'lodash/omit';
 import { Op } from 'sequelize';
 
 import dataBase from '../../db/models';
-import { IDataBase } from '../common/types/db-types';
+import { Group } from '../../db/models/group';
+import { IDataBase } from '../../db/models/types';
 import { generateNotFoundError } from '../common/utils/error-handling';
 import { UserId } from '../user/types/user-dto';
 
-import { Group, GroupBase, GroupId } from './types/group-dto';
-import { GroupInstance } from './types/group-model.types';
+import { GroupBase, GroupId } from './types/group-dto';
 import { IGroupService } from './types/group-service.types';
-
-// Dirty hack to make JS work with TS and preserve typings
-const db = (dataBase as unknown) as IDataBase;
 
 class GroupService implements IGroupService {
   sequelize: IDataBase['sequelize'];
@@ -26,7 +23,7 @@ class GroupService implements IGroupService {
     this.userModel = dbInstance.User;
   }
 
-  private getGroupFromGroupInstance = (groupInstance: GroupInstance): Group =>
+  private getGroupFromGroupInstance = (groupInstance: Group) =>
     omit(groupInstance.get(), ['createdAt', 'updatedAt']);
 
   getAll = async () => {
@@ -131,7 +128,7 @@ class GroupService implements IGroupService {
           through: { attributes: [] },
         },
         // "updatedGroup" always exists, so it's done for TS purposes only
-      })) as GroupInstance;
+      })) as Group;
 
       return this.getGroupFromGroupInstance(updatedGroup);
     } catch (error) {
@@ -142,6 +139,6 @@ class GroupService implements IGroupService {
   };
 }
 
-const groupService = new GroupService(db);
+const groupService = new GroupService(dataBase);
 
 export { groupService };

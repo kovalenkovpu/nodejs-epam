@@ -1,35 +1,29 @@
-// import { injectable, inject } from 'inversify';
+import { injectable, inject } from 'inversify';
 import omit from 'lodash/omit';
 import { Op } from 'sequelize';
 
-import dataBase from '../../db/models';
-import 'reflect-metadata';
-import { IDataBase } from '../../db/models/types';
-import { User } from '../../db/models/user';
+import { IUserModel } from '../../db/models/types';
+import { User as UserModel } from '../../db/models/user';
 import { generateNotFoundError } from '../common/utils/error-handling';
 import { AuthData } from '../login/types/login-controller.types';
-// import { TYPES } from '../types';
+import { TYPES } from '../types';
 
 import { AutosuggestUsersResponse } from './types/user-controller.types';
-import { UserBase, UserId } from './types/user-dto';
+import { UserBase, UserDTO, User, UserId } from './types/user-dto';
 import { IUserService } from './types/user-service.types';
 
-// @injectable()
+@injectable()
 class UserService implements IUserService {
-  userModel: IDataBase['User'];
+  private userModel: IUserModel;
 
-  constructor(
-    dbInstance: IDataBase
-    // @inject(TYPES.UserModel) userModel: IDataBase['User']
-  ) {
-    this.userModel = dbInstance.User;
-    // this.userModel = userModel;
+  constructor(@inject(TYPES.UserModel) userModel: IUserModel) {
+    this.userModel = userModel;
   }
 
-  private getUserFromUserInstance = (userInstance: User) =>
+  private getUserFromUserInstance = (userInstance: UserModel): User =>
     omit(userInstance.get(), ['isDeleted', 'createdAt', 'updatedAt']);
 
-  getAll = async () => {
+  getAll = async (): Promise<User[]> => {
     const users = await this.userModel.findAll({
       where: { isDeleted: false },
     });
@@ -37,7 +31,7 @@ class UserService implements IUserService {
     return users.map(this.getUserFromUserInstance);
   };
 
-  getAllWithCompleteData = async () => {
+  getAllWithCompleteData = async (): Promise<UserDTO[]> => {
     const users = await this.userModel.findAll({
       include: {
         association: 'Groups',
@@ -55,7 +49,7 @@ class UserService implements IUserService {
   getAutoSuggestUsers = async (
     loginSubstring: string,
     limit: number | undefined
-  ) => {
+  ): Promise<AutosuggestUsersResponse> => {
     const users = await this.userModel.findAndCountAll({
       where: {
         isDeleted: false,
@@ -74,7 +68,7 @@ class UserService implements IUserService {
     return autosuggestedUsers;
   };
 
-  getOne = async (id: UserId) => {
+  getOne = async (id: UserId): Promise<User> => {
     const user = await this.userModel.findOne({
       where: { id, isDeleted: false },
     });
@@ -86,7 +80,10 @@ class UserService implements IUserService {
     return this.getUserFromUserInstance(user);
   };
 
-  findOneByCredentials = async ({ login, password }: AuthData) => {
+  findOneByCredentials = async ({
+    login,
+    password,
+  }: AuthData): Promise<User> => {
     const user = await this.userModel.findOne({
       where: { login, isDeleted: false },
     });
@@ -102,13 +99,13 @@ class UserService implements IUserService {
     return this.getUserFromUserInstance(user);
   };
 
-  create = async (userData: UserBase) => {
+  create = async (userData: UserBase): Promise<User> => {
     const newUser = await this.userModel.create(userData);
 
     return this.getUserFromUserInstance(newUser);
   };
 
-  update = async (id: UserId, userData: UserBase) => {
+  update = async (id: UserId, userData: UserBase): Promise<User> => {
     const user = await this.userModel.findOne({
       where: { id, isDeleted: false },
     });
@@ -122,7 +119,7 @@ class UserService implements IUserService {
     return this.getUserFromUserInstance(updatedUser);
   };
 
-  delete = async (id: UserId) => {
+  delete = async (id: UserId): Promise<User> => {
     const user = await this.userModel.findOne({
       where: { id, isDeleted: false },
     });
@@ -150,6 +147,4 @@ class UserService implements IUserService {
   };
 }
 
-const userService = new UserService(dataBase);
-
-export { userService };
+export { UserService };

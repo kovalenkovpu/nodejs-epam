@@ -1,38 +1,44 @@
+import { inject, injectable } from 'inversify';
 import difference from 'lodash/difference';
 import isEmpty from 'lodash/isEmpty';
 import omit from 'lodash/omit';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 
-import dataBase from '../../db/models';
-import { Group } from '../../db/models/group';
-import { IDataBase } from '../../db/models/types';
+import { Group as GroupModel } from '../../db/models/group';
+import { IGroupModel, IUserModel } from '../../db/models/types';
 import { generateNotFoundError } from '../common/utils/error-handling';
+import { TYPES } from '../types';
 import { UserId } from '../user/types/user-dto';
 
-import { GroupBase, GroupId } from './types/group-dto';
+import { GroupBase, Group, GroupId } from './types/group-dto';
 import { IGroupService } from './types/group-service.types';
 
+@injectable()
 class GroupService implements IGroupService {
-  sequelize: IDataBase['sequelize'];
-  groupModel: IDataBase['Group'];
-  userModel: IDataBase['User'];
+  private sequelize: Sequelize;
+  private userModel: IUserModel;
+  private groupModel: IGroupModel;
 
-  constructor(dbInstance: IDataBase) {
-    this.sequelize = dbInstance.sequelize;
-    this.groupModel = dbInstance.Group;
-    this.userModel = dbInstance.User;
+  constructor(
+    @inject(TYPES.Sequelize) sequelize: Sequelize,
+    @inject(TYPES.UserModel) userModel: IUserModel,
+    @inject(TYPES.GroupModel) groupModel: IGroupModel
+  ) {
+    this.sequelize = sequelize;
+    this.groupModel = groupModel;
+    this.userModel = userModel;
   }
 
-  private getGroupFromGroupInstance = (groupInstance: Group) =>
+  private getGroupFromGroupInstance = (groupInstance: GroupModel): Group =>
     omit(groupInstance.get(), ['createdAt', 'updatedAt']);
 
-  getAll = async () => {
+  getAll = async (): Promise<Group[]> => {
     const groups = await this.groupModel.findAll();
 
     return groups.map(this.getGroupFromGroupInstance);
   };
 
-  getOne = async (id: GroupId) => {
+  getOne = async (id: GroupId): Promise<Group> => {
     const group = await this.groupModel.findOne({ where: { id } });
 
     if (!group) {
@@ -42,13 +48,13 @@ class GroupService implements IGroupService {
     return this.getGroupFromGroupInstance(group);
   };
 
-  create = async (groupData: GroupBase) => {
+  create = async (groupData: GroupBase): Promise<Group> => {
     const newGroup = await this.groupModel.create(groupData);
 
     return this.getGroupFromGroupInstance(newGroup);
   };
 
-  update = async (id: GroupId, groupData: GroupBase) => {
+  update = async (id: GroupId, groupData: GroupBase): Promise<Group> => {
     const group = await this.groupModel.findOne({ where: { id } });
 
     if (!group) {
@@ -60,7 +66,7 @@ class GroupService implements IGroupService {
     return this.getGroupFromGroupInstance(updatedGroup);
   };
 
-  delete = async (id: GroupId) => {
+  delete = async (id: GroupId): Promise<Group> => {
     const group = await this.groupModel.findOne({ where: { id } });
 
     if (!group) {
@@ -77,7 +83,10 @@ class GroupService implements IGroupService {
     return this.getGroupFromGroupInstance(group);
   };
 
-  addUsersToGroup = async (groupId: GroupId, usersIds: UserId[]) => {
+  addUsersToGroup = async (
+    groupId: GroupId,
+    usersIds: UserId[]
+  ): Promise<Group> => {
     const transaction = await this.sequelize.transaction();
 
     try {
@@ -128,7 +137,7 @@ class GroupService implements IGroupService {
           through: { attributes: [] },
         },
         // "updatedGroup" always exists, so it's done for TS purposes only
-      })) as Group;
+      })) as GroupModel;
 
       return this.getGroupFromGroupInstance(updatedGroup);
     } catch (error) {
@@ -139,6 +148,4 @@ class GroupService implements IGroupService {
   };
 }
 
-const groupService = new GroupService(dataBase);
-
-export { groupService };
+export { GroupService };

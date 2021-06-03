@@ -1,14 +1,8 @@
-// import { IDataBase } from '../../common/types/db-types';
-import { IDataBase } from '../../../db/models/types';
 import { UserId } from '../../user/types/user-dto';
 
 import { Group, GroupBase, GroupId } from './group-dto';
 
 interface IGroupService {
-  sequelize: IDataBase['sequelize'];
-  groupModel: IDataBase['Group'];
-  userModel: IDataBase['User'];
-
   getAll: () => Promise<Group[]>;
 
   getOne: (id: GroupId) => Promise<Group | undefined>;

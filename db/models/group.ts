@@ -1,3 +1,5 @@
+import { injectable } from 'inversify';
+import 'reflect-metadata';
 import {
   Model,
   DataTypes,
@@ -16,6 +18,7 @@ import { User } from './user';
 
 type GroupCreationAttributes = Optional<GroupDTO, 'id'>;
 
+@injectable()
 class Group
   extends Model<GroupDTO, GroupCreationAttributes>
   implements GroupDTO {

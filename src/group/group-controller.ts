@@ -1,14 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
+import { iocContainer } from '../inversify.config';
 
-import { groupService } from './group-service';
+import { GroupService } from './group-service';
 import {
   IGroupController,
   GroupParams,
   AddUserToGroupRequestBody,
 } from './types/group-controller.types';
 import { Group, GroupBase } from './types/group-dto';
+
+const groupService = iocContainer.resolve(GroupService);
 
 class GroupController implements IGroupController {
   @executionTimeTracker()

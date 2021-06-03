@@ -1,3 +1,5 @@
+import { injectable } from 'inversify';
+import 'reflect-metadata';
 import {
   DataTypes,
   Model,
@@ -15,6 +17,7 @@ import { IDataBase } from './types';
 
 type UserCreationAttributes = Optional<UserDTO, 'id' | 'isDeleted'>;
 
+@injectable()
 class User extends Model<UserDTO, UserCreationAttributes> implements UserDTO {
   public id!: string;
   public login!: string;

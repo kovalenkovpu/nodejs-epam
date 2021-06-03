@@ -1,12 +1,9 @@
-import { IDataBase } from '../../../db/models/types';
 import { AuthData } from '../../login/types/login-controller.types';
 
 import { AutosuggestUsersResponse } from './user-controller.types';
 import { UserBase, User, UserId } from './user-dto';
 
 interface IUserService {
-  userModel: IDataBase['User'];
-
   getAll: () => Promise<User[]>;
 
   getAllWithCompleteData: () => Promise<User[]>;

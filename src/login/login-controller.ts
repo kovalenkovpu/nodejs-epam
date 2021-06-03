@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-// import { myContainer } from '../inversify.config';
-// import { TYPES } from '../types';
-// import { IUserService } from '../user/types/user-service.types';
-
-import { userService } from '../user/user-service';
+import { iocContainer } from '../inversify.config';
+import { UserService } from '../user/user-service';
 
 import { AuthData, ILoginController } from './types/login-controller.types';
 
-// const userService = myContainer.get<IUserService>(TYPES.UserService);
+const userService = iocContainer.resolve(UserService);
 const secret = String(process.env.SECRET);
 
 class LoginController implements ILoginController {

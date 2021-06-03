@@ -1,18 +1,26 @@
 import { Container } from 'inversify';
+import 'reflect-metadata';
+import { Sequelize } from 'sequelize/types';
 
-// import db from '../db/models';
+import dataBase from '../db/models';
+import { IUserModel, IGroupModel } from '../db/models/types';
 
-// import { IDataBase } from './common/types/db-types';
-// import { TYPES } from './types';
-// import { IUserService } from './user/types/user-service.types';
-// import { UserService } from './user/user-service';
+import { GroupService } from './group/group-service';
+import { IGroupService } from './group/types/group-service.types';
+import { TYPES } from './types';
+import { IUserService } from './user/types/user-service.types';
+import { UserService } from './user/user-service';
 
-const myContainer = new Container();
+const iocContainer = new Container();
 
-// myContainer.bind<IUserService>(TYPES.UserService).to(UserService);
-// myContainer
-// .bind<IDataBase['User']>(TYPES.UserModel)
-// // @ts-ignore
-// .to(db.User);
+iocContainer.bind<IUserService>(TYPES.UserService).to(UserService);
+iocContainer.bind<IGroupService>(TYPES.UserService).to(GroupService);
+iocContainer.bind<IUserModel>(TYPES.UserModel).toConstantValue(dataBase.User);
+iocContainer
+  .bind<IGroupModel>(TYPES.GroupModel)
+  .toConstantValue(dataBase.Group);
+iocContainer
+  .bind<Sequelize>(TYPES.Sequelize)
+  .toConstantValue(dataBase.sequelize);
 
-export { myContainer };
+export { iocContainer };

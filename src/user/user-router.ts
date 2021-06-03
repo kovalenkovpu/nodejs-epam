@@ -1,9 +1,12 @@
 import express from 'express';
 
+import { iocContainer } from '../inversify.config';
+
 import * as userValidationMiddleware from './middlewares/user-validator';
-import { userController } from './user-controller';
+import { UserController } from './user-controller';
 
 const userRouter = express.Router();
+const userController = iocContainer.resolve(UserController);
 
 userRouter.get('/', userController.getAll);
 

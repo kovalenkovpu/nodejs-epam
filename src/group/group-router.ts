@@ -1,9 +1,12 @@
 import express from 'express';
 
-import { groupController } from './group-controller';
+import { iocContainer } from '../inversify.config';
+
+import { GroupController } from './group-controller';
 import * as groupValidationMiddleware from './middlewares/group-validator';
 
 const groupRouter = express.Router();
+const groupController = iocContainer.resolve(GroupController);
 
 groupRouter.get('/', groupController.getAll);
 

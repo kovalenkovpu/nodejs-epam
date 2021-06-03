@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
-import { iocContainer } from '../inversify.config';
+import { TYPES } from '../types';
 
 import { GroupService } from './group-service';
 import {
@@ -11,17 +12,22 @@ import {
 } from './types/group-controller.types';
 import { Group, GroupBase } from './types/group-dto';
 
-const groupService = iocContainer.resolve(GroupService);
-
+@injectable()
 class GroupController implements IGroupController {
+  private groupService: GroupService;
+
+  constructor(@inject(TYPES.GroupService) groupService: GroupService) {
+    this.groupService = groupService;
+  }
+
   @executionTimeTracker()
   async getAll(
     req: Request<any, Group[]>,
     res: Response<Group[]>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
-      const groups = await groupService.getAll();
+      const groups = await this.groupService.getAll();
 
       res.send(groups);
     } catch (error) {
@@ -41,10 +47,10 @@ class GroupController implements IGroupController {
     req: Request<GroupParams>,
     res: Response<Group>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { id } = req.params;
-      const currentGroup = await groupService.getOne(id);
+      const currentGroup = await this.groupService.getOne(id);
 
       res.send(currentGroup);
     } catch (error) {
@@ -64,9 +70,9 @@ class GroupController implements IGroupController {
     req: Request<any, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
-      const group = await groupService.create(req.body);
+      const group = await this.groupService.create(req.body);
 
       res.send(group);
     } catch (error) {
@@ -86,13 +92,13 @@ class GroupController implements IGroupController {
     req: Request<GroupParams, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const {
         params: { id },
         body: groupData,
       } = req;
-      const updatedGroup = await groupService.update(id, groupData);
+      const updatedGroup = await this.groupService.update(id, groupData);
 
       res.send(updatedGroup);
     } catch (error) {
@@ -112,11 +118,11 @@ class GroupController implements IGroupController {
     req: Request<GroupParams>,
     res: Response<string>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { id } = req.params;
 
-      await groupService.delete(id);
+      await this.groupService.delete(id);
 
       res.send(`Group with id: ${id} successfully deleted`);
     } catch (error) {
@@ -136,14 +142,17 @@ class GroupController implements IGroupController {
     req: Request<GroupParams, Group, AddUserToGroupRequestBody>,
     res: Response<Group>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const {
         params: { id },
         body: { usersIds },
       } = req;
 
-      const updatedGroup = await groupService.addUsersToGroup(id, usersIds);
+      const updatedGroup = await this.groupService.addUsersToGroup(
+        id,
+        usersIds
+      );
 
       res.send(updatedGroup);
     } catch (error) {
@@ -159,6 +168,4 @@ class GroupController implements IGroupController {
   }
 }
 
-const groupController = new GroupController();
-
-export { groupController };
+export { GroupController };

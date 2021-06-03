@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
-import { iocContainer } from '../inversify.config';
+import { TYPES } from '../types';
 
 import {
   AutosuggestUsersQueryParams,
@@ -14,23 +15,27 @@ import {
 import { User, UserBase, UserDTO } from './types/user-dto';
 import { UserService } from './user-service';
 
-const userService = iocContainer.resolve(UserService);
-
+@injectable()
 class UserController implements IUserController {
+  private userService: UserService;
+
+  constructor(@inject(TYPES.UserService) userService: UserService) {
+    this.userService = userService;
+  }
   @executionTimeTracker()
   async getAll(
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[] | UserDTO[]>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       let users: User[];
       const { withCompleteData } = req.query;
 
       if (withCompleteData === WITH_COMPLETE_DATA) {
-        users = await userService.getAllWithCompleteData();
+        users = await this.userService.getAllWithCompleteData();
       } else {
-        users = await userService.getAll();
+        users = await this.userService.getAll();
       }
 
       res.send(users);
@@ -56,10 +61,10 @@ class UserController implements IUserController {
     >,
     res: Response<AutosuggestUsersResponse>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { loginSubstring, limit } = req.query;
-      const autosuggestedUsers = await userService.getAutoSuggestUsers(
+      const autosuggestedUsers = await this.userService.getAutoSuggestUsers(
         loginSubstring,
         limit
       );
@@ -82,10 +87,10 @@ class UserController implements IUserController {
     req: Request<UserParams>,
     res: Response<User>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { id } = req.params;
-      const currentUser = await userService.getOne(id);
+      const currentUser = await this.userService.getOne(id);
 
       res.send(currentUser);
     } catch (error) {
@@ -105,9 +110,9 @@ class UserController implements IUserController {
     req: Request<any, User, UserBase>,
     res: Response<User>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
-      const user = await userService.create(req.body);
+      const user = await this.userService.create(req.body);
 
       res.send(user);
     } catch (error) {
@@ -127,13 +132,13 @@ class UserController implements IUserController {
     req: Request<UserParams, User, UserBase>,
     res: Response<User>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const {
         params: { id },
         body: userData,
       } = req;
-      const updatedUser = await userService.update(id, userData);
+      const updatedUser = await this.userService.update(id, userData);
 
       res.send(updatedUser);
     } catch (error) {
@@ -153,11 +158,11 @@ class UserController implements IUserController {
     req: Request<UserParams>,
     res: Response<string>,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { id } = req.params;
 
-      await userService.delete(id);
+      await this.userService.delete(id);
 
       res.send(`User with id: ${id} successfully deleted`);
     } catch (error) {
@@ -173,6 +178,4 @@ class UserController implements IUserController {
   }
 }
 
-const userController = new UserController();
-
-export { userController };
+export { UserController };

@@ -5,8 +5,8 @@ import { Op } from 'sequelize';
 import { IUserModel } from '../../db/models/types';
 import { User as UserModel } from '../../db/models/user';
 import { generateNotFoundError } from '../common/utils/error-handling';
+import { TYPES } from '../inversify.types';
 import { AuthData } from '../login/types/login-controller.types';
-import { TYPES } from '../types';
 
 import { AutosuggestUsersResponse } from './types/user-controller.types';
 import { UserBase, UserDTO, User, UserId } from './types/user-dto';

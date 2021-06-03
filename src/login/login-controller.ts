@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 
-import { TYPES } from '../types';
+import { TYPES } from '../inversify.types';
 import { UserService } from '../user/user-service';
 
 import { AuthData, ILoginController } from './types/login-controller.types';

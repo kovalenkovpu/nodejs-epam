@@ -11,7 +11,7 @@ import { IGroupController } from './group/types/group-controller.types';
 import { IGroupService } from './group/types/group-service.types';
 import { LoginController } from './login/login-controller';
 import { ILoginController } from './login/types/login-controller.types';
-import { TYPES } from './types';
+import { TYPES } from './inversify.types';
 import { IUserController } from './user/types/user-controller.types';
 import { IUserService } from './user/types/user-service.types';
 import { UserController } from './user/user-controller';

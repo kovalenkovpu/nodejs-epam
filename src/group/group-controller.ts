@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
-import { TYPES } from '../types';
+import { TYPES } from '../inversify.types';
 
 import { GroupService } from './group-service';
 import {

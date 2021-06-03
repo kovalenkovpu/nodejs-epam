@@ -7,7 +7,7 @@ import { Op, Sequelize } from 'sequelize';
 import { Group as GroupModel } from '../../db/models/group';
 import { IGroupModel, IUserModel } from '../../db/models/types';
 import { generateNotFoundError } from '../common/utils/error-handling';
-import { TYPES } from '../types';
+import { TYPES } from '../inversify.types';
 import { UserId } from '../user/types/user-dto';
 
 import { GroupBase, Group, GroupId } from './types/group-dto';

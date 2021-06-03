@@ -12,3 +12,7 @@ Add authorization to the already existing REST service.
 ## TASK 6.2
 
 Add CORS middleware to access service methods from WEB applications hosted on another domains (https://github.com/expressjs/cors).
+
+## EXTRA (self-study):
+
+Intorduce DI and IoC (inversify)

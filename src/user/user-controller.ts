@@ -21,7 +21,15 @@ class UserController implements IUserController {
 
   constructor(@inject(TYPES.UserService) userService: UserService) {
     this.userService = userService;
+
+    this.getAll = this.getAll.bind(this);
+    this.getAutoSuggestUsers = this.getAutoSuggestUsers.bind(this);
+    this.getOne = this.getOne.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
+
   @executionTimeTracker()
   async getAll(
     req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,

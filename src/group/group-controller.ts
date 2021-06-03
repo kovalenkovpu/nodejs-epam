@@ -18,6 +18,13 @@ class GroupController implements IGroupController {
 
   constructor(@inject(TYPES.GroupService) groupService: GroupService) {
     this.groupService = groupService;
+
+    this.getAll = this.getAll.bind(this);
+    this.getOne = this.getOne.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.addUsersToGroup = this.addUsersToGroup.bind(this);
   }
 
   @executionTimeTracker()

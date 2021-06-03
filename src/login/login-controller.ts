@@ -1,18 +1,30 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 
-import { iocContainer } from '../inversify.config';
+import { TYPES } from '../types';
 import { UserService } from '../user/user-service';
 
 import { AuthData, ILoginController } from './types/login-controller.types';
 
-const userService = iocContainer.resolve(UserService);
 const secret = String(process.env.SECRET);
 
+@injectable()
 class LoginController implements ILoginController {
-  async login(req: Request<unknown, unknown, AuthData>, res: Response) {
+  private userService: UserService;
+
+  constructor(@inject(TYPES.UserService) userService: UserService) {
+    this.userService = userService;
+
+    this.login = this.login.bind(this);
+  }
+
+  async login(
+    req: Request<unknown, unknown, AuthData>,
+    res: Response
+  ): Promise<void> {
     try {
-      const user = await userService.findOneByCredentials(req.body);
+      const user = await this.userService.findOneByCredentials(req.body);
       const payload = { sub: user?.id };
       const token = jwt.sign(payload, secret, { expiresIn: 600 });
 
@@ -28,6 +40,4 @@ class LoginController implements ILoginController {
   }
 }
 
-const loginController = new LoginController();
-
-export { loginController };
+export { LoginController };

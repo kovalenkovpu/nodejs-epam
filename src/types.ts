@@ -5,6 +5,7 @@ const TYPES = {
   GroupService: Symbol.for('GroupService'),
   GroupModel: Symbol.for('GroupModel'),
   GroupController: Symbol.for('GroupController'),
+  LoginController: Symbol.for('LoginController'),
   Sequelize: Symbol.for('Sequelize'),
 };
 

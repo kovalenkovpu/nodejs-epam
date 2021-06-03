@@ -9,6 +9,8 @@ import { GroupController } from './group/group-controller';
 import { GroupService } from './group/group-service';
 import { IGroupController } from './group/types/group-controller.types';
 import { IGroupService } from './group/types/group-service.types';
+import { LoginController } from './login/login-controller';
+import { ILoginController } from './login/types/login-controller.types';
 import { TYPES } from './types';
 import { IUserController } from './user/types/user-controller.types';
 import { IUserService } from './user/types/user-service.types';
@@ -25,6 +27,7 @@ iocContainer.bind<IUserModel>(TYPES.UserModel).toConstantValue(dataBase.User);
 iocContainer
   .bind<IGroupModel>(TYPES.GroupModel)
   .toConstantValue(dataBase.Group);
+iocContainer.bind<ILoginController>(TYPES.LoginController).to(LoginController);
 iocContainer
   .bind<Sequelize>(TYPES.Sequelize)
   .toConstantValue(dataBase.sequelize);

@@ -1,4 +1,5 @@
 import { injectable, inject } from 'inversify';
+import 'reflect-metadata';
 import omit from 'lodash/omit';
 import { Op } from 'sequelize';
 

@@ -25,8 +25,8 @@ class User extends Model<UserDTO, UserCreationAttributes> implements UserDTO {
   public age!: number;
   public isDeleted!: boolean;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly createdAt!: string;
+  public readonly updatedAt!: string;
 
   public getGroups: BelongsToManyGetAssociationsMixin<Group>;
   public removeGroups: BelongsToManyRemoveAssociationsMixin<Group, Group['id']>;

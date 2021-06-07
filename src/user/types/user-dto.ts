@@ -14,8 +14,8 @@ type UserId = string;
 interface UserDTO extends UserBase {
   id: UserId;
   isDeleted: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Send to FE

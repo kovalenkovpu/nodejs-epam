@@ -1,12 +1,15 @@
 import express from 'express';
 
 import { iocContainer } from '../inversify.config';
+import { TYPES } from '../inversify.types';
 
-import { LoginController } from './login-controller';
 import * as loginValidationMiddleware from './middlewares/login-validator';
+import { ILoginController } from './types/login-controller.types';
 
 const loginRouter = express.Router();
-const loginController = iocContainer.resolve(LoginController);
+const loginController = iocContainer.get<ILoginController>(
+  TYPES.LoginController
+);
 
 loginRouter.post(
   '/',

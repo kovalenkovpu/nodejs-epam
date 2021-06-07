@@ -24,14 +24,14 @@ interface UserParams {
 
 interface IUserController {
   getAll: (
-    req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
+    req: Request<unknown, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[]>,
     next: NextFunction
   ) => Promise<void>;
 
   getAutoSuggestUsers: (
     req: Request<
-      any,
+      unknown,
       AutosuggestUsersResponse,
       undefined,
       AutosuggestUsersQueryParams
@@ -47,7 +47,7 @@ interface IUserController {
   ) => Promise<void>;
 
   create: (
-    req: Request<any, User, UserBase>,
+    req: Request<unknown, User, UserBase>,
     res: Response<User>,
     next: NextFunction
   ) => Promise<void>;

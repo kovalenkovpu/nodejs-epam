@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import 'reflect-metadata';
 
 import { controllerErrorLogger, executionTimeTracker } from '../common/utils';
 import { TYPES } from '../inversify.types';
@@ -32,7 +33,7 @@ class UserController implements IUserController {
 
   @executionTimeTracker()
   async getAll(
-    req: Request<any, User[] | UserDTO[], any, GetAllUsersQueryParams>,
+    req: Request<unknown, User[] | UserDTO[], any, GetAllUsersQueryParams>,
     res: Response<User[] | UserDTO[]>,
     next: NextFunction
   ): Promise<void> {
@@ -62,7 +63,7 @@ class UserController implements IUserController {
   @executionTimeTracker()
   async getAutoSuggestUsers(
     req: Request<
-      any,
+      unknown,
       AutosuggestUsersResponse,
       undefined,
       AutosuggestUsersQueryParams
@@ -115,7 +116,7 @@ class UserController implements IUserController {
 
   @executionTimeTracker()
   async create(
-    req: Request<any, User, UserBase>,
+    req: Request<unknown, User, UserBase>,
     res: Response<User>,
     next: NextFunction
   ): Promise<void> {

@@ -14,7 +14,7 @@ interface AddUserToGroupRequestBody {
 
 interface IGroupController {
   getAll: (
-    req: Request<any, Group[]>,
+    req: Request<unknown, Group[]>,
     res: Response<Group[]>,
     next: NextFunction
   ) => Promise<void>;
@@ -26,7 +26,7 @@ interface IGroupController {
   ) => Promise<void>;
 
   create: (
-    req: Request<any, Group, GroupBase>,
+    req: Request<unknown, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
   ) => Promise<void>;

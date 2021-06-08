@@ -29,7 +29,7 @@ class GroupController implements IGroupController {
 
   @executionTimeTracker()
   async getAll(
-    req: Request<any, Group[]>,
+    req: Request<unknown, Group[]>,
     res: Response<Group[]>,
     next: NextFunction
   ): Promise<void> {
@@ -74,7 +74,7 @@ class GroupController implements IGroupController {
 
   @executionTimeTracker()
   async create(
-    req: Request<any, Group, GroupBase>,
+    req: Request<unknown, Group, GroupBase>,
     res: Response<Group>,
     next: NextFunction
   ): Promise<void> {

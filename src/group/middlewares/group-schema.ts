@@ -2,12 +2,12 @@ import Joi from 'joi';
 import isEmpty from 'lodash/isEmpty';
 
 import { PERMISSIONS } from '../constants';
-import { GroupBase } from '../types/group-dto';
+import { GroupBase, Permission } from '../types/group-dto';
 
 const groupSchema = Joi.object<GroupBase>({
   name: Joi.string().trim().required(),
   permissions: Joi.array()
-    .custom((permissions: string[]) => {
+    .custom((permissions: Permission[]) => {
       const unknownPermissions = permissions.filter(
         (permission) => !Object.values(PERMISSIONS).includes(permission)
       );

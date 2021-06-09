@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Container } from 'inversify';
 
 import {
   autosuggestUsersResponse,
@@ -10,9 +9,9 @@ import {
   userCreationData,
   userUpdateData,
 } from '../../__mocks__/user-data';
-import { MockUserService } from '../../__mocks__/user-service';
 import * as logUtils from '../../common/utils';
 import { mockError, nextFunction } from '../../common/utils/test-utils';
+import { iocContainer } from '../../inversify.config';
 import { TYPES } from '../../inversify.types';
 import {
   AutosuggestUsersQueryParams,
@@ -23,27 +22,21 @@ import {
 } from '../types/user-controller.types';
 import { User, UserBase, UserDTO } from '../types/user-dto';
 import { IUserService } from '../types/user-service.types';
-import { UserController } from '../user-controller';
 
 describe('User Controller tests', () => {
-  const container = new Container();
-  container.bind<IUserController>(TYPES.UserController).to(UserController);
-  container
-    .bind<IUserService>(TYPES.UserService)
-    .to(MockUserService)
-    .inSingletonScope();
-
   afterEach(jest.clearAllMocks);
 
-  const userController = container.get<IUserController>(TYPES.UserController);
-  const userService = container.get<IUserService>(TYPES.UserService);
+  const userController = iocContainer.get<IUserController>(
+    TYPES.UserController
+  );
+  const userService = iocContainer.get<IUserService>(TYPES.UserService);
 
   const controllerErrorLoggerSpy = jest
     .spyOn(logUtils, 'controllerErrorLogger')
     // To keep console clear and clean during tests run
     .mockImplementation(() => null);
 
-  describe('Tests for "userController.getAll":', () => {
+  describe('"userController.getAll":', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<
       User[] | UserDTO[]
     >;
@@ -53,7 +46,7 @@ describe('User Controller tests', () => {
       'getAllWithCompleteData'
     );
 
-    test(`"getAll" should call "userService.getAll" with correct params
+    test(`should call "userService.getAll" with correct params
         and resolve with correct data if it's envoked
         with no query parameters`, async () => {
       const req = { query: {} } as Request<
@@ -73,7 +66,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(mockUsers);
     });
 
-    test(`"getAll" should call "userService.getAllWithCompleteData" with
+    test(`should call "userService.getAllWithCompleteData" with
         correct params and resolve with correct data if it's envoked with
         "withCompleteData" query parameter`, async () => {
       const req = ({
@@ -96,7 +89,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(mockUsersWithCompleteData);
     });
 
-    test(`"getAll" should call "userService.getAll" with correct params
+    test(`should call "userService.getAll" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -125,7 +118,7 @@ describe('User Controller tests', () => {
     });
   });
 
-  describe('Tests for "userController.getAutoSuggestUsers":', () => {
+  describe('"userController.getAutoSuggestUsers":', () => {
     const loginSubstring = 'petr';
     const limit = 10;
     const req = { query: { loginSubstring, limit } } as Request<
@@ -143,7 +136,7 @@ describe('User Controller tests', () => {
       'getAutoSuggestUsers'
     );
 
-    test(`"getAutoSuggestUsers" should call "userService.getAutoSuggestUsers"
+    test(`should call "userService.getAutoSuggestUsers"
         with correct params and resolve with correct data`, async () => {
       getAutoSuggestUsersSpy.mockResolvedValueOnce(autosuggestUsersResponse);
 
@@ -154,7 +147,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(autosuggestUsersResponse);
     });
 
-    test(`"getAutoSuggestUsers" should call "userService.getAutoSuggestUsers"
+    test(`should call "userService.getAutoSuggestUsers"
         with correct params and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -176,12 +169,12 @@ describe('User Controller tests', () => {
     });
   });
 
-  describe('Tests for "userController.getOne":', () => {
+  describe('"userController.getOne":', () => {
     const req = { params: { id: mockUser.id } } as Request<UserParams>;
     const res = ({ send: jest.fn() } as unknown) as Response<User>;
     const getOneSpy = jest.spyOn(userService, 'getOne');
 
-    test(`"getOne" should call "userService.getOne" with correct params
+    test(`should call "userService.getOne" with correct params
         and resolve with correct data`, async () => {
       getOneSpy.mockResolvedValueOnce(mockUser);
 
@@ -192,7 +185,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(mockUser);
     });
 
-    test(`"getOne" should call "userService.getOne" with correct params
+    test(`should call "userService.getOne" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -214,12 +207,12 @@ describe('User Controller tests', () => {
     });
   });
 
-  describe('Tests for "userController.create":', () => {
+  describe('"userController.create":', () => {
     const req = { body: userCreationData } as Request<unknown, User, UserBase>;
     const res = ({ send: jest.fn() } as unknown) as Response<User>;
     const createSpy = jest.spyOn(userService, 'create');
 
-    test(`"create" should call "userService.create" with correct params
+    test(`should call "userService.create" with correct params
         and resolve with correct data`, async () => {
       createSpy.mockResolvedValueOnce(mockUser);
 
@@ -230,7 +223,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(mockUser);
     });
 
-    test(`"create" should call "userService.create" with correct params
+    test(`should call "userService.create" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -252,7 +245,7 @@ describe('User Controller tests', () => {
     });
   });
 
-  describe('Tests for "userController.update":', () => {
+  describe('"userController.update":', () => {
     const req = {
       params: { id: mockUser.id },
       body: userUpdateData,
@@ -260,7 +253,7 @@ describe('User Controller tests', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<User>;
     const updateSpy = jest.spyOn(userService, 'update');
 
-    test(`"update" should call "userService.update" with correct params
+    test(`should call "userService.update" with correct params
         and resolve with correct data`, async () => {
       updateSpy.mockResolvedValueOnce(mockUserUpdated);
 
@@ -271,7 +264,7 @@ describe('User Controller tests', () => {
       expect(res.send).toBeCalledWith(mockUserUpdated);
     });
 
-    test(`"update" should call "userService.update" with correct params
+    test(`should call "userService.update" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -293,14 +286,14 @@ describe('User Controller tests', () => {
     });
   });
 
-  describe('Tests for "userController.delete":', () => {
+  describe('"userController.delete":', () => {
     const req = {
       params: { id: mockUser.id },
     } as Request<UserParams>;
     const res = ({ send: jest.fn() } as unknown) as Response<string>;
     const deleteSpy = jest.spyOn(userService, 'delete');
 
-    test(`"delete" should call "userService.delete" with correct params
+    test(`should call "userService.delete" with correct params
         and resolve with correct data`, async () => {
       deleteSpy.mockResolvedValueOnce(mockUser);
 
@@ -313,7 +306,7 @@ describe('User Controller tests', () => {
       );
     });
 
-    test(`"delete" should call "userService.delete" with correct params
+    test(`should call "userService.delete" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {

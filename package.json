@@ -12,15 +12,15 @@
     "start:dev": "npm run db:migrate && nodemon ./src/index.ts",
     "start:dev:seed": "npm run db:migrate && npm run db:seed && nodemon ./src/index.ts",
     "build": "tsc --build",
-    "heroku:promote": "git push heroku TASK6-JWT-and-CORS:main",
+    "heroku:promote": "git push heroku TASK7-Unit-tests-and-config:main",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "npx sequelize-cli db:seed:all",
     "format:check": "prettier --check .",
     "tslint": "tsc --noEmit",
     "lint": "eslint --ext .ts src --color",
     "lint:all": "npm run tslint && npm run lint && npm run format:check && npm run test",
-    "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test": "set PERF_TRACK=false && jest --collectCoverage",
+    "test:watch": "set PERF_TRACK=false && jest --watchAll --verbose"
   },
   "license": "ISC",
   "devDependencies": {

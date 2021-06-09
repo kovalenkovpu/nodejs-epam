@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Container } from 'inversify';
 
 import {
   mockGroup,
@@ -9,12 +8,11 @@ import {
   mockGroupUpdated,
   groupWithAssignedUsers,
 } from '../../__mocks__/group-data';
-import { MockGroupService } from '../../__mocks__/group-service';
 import { mockUser } from '../../__mocks__/user-data';
 import * as logUtils from '../../common/utils';
 import { mockError, nextFunction } from '../../common/utils/test-utils';
+import { iocContainer } from '../../inversify.config';
 import { TYPES } from '../../inversify.types';
-import { GroupController } from '../group-controller';
 import {
   AddUserToGroupRequestBody,
   GroupParams,
@@ -24,30 +22,23 @@ import { Group, GroupBase } from '../types/group-dto';
 import { IGroupService } from '../types/group-service.types';
 
 describe('Group Controller tests', () => {
-  const container = new Container();
-  container.bind<IGroupController>(TYPES.GroupController).to(GroupController);
-  container
-    .bind<IGroupService>(TYPES.GroupService)
-    .to(MockGroupService)
-    .inSingletonScope();
-
   afterEach(jest.clearAllMocks);
 
-  const groupController = container.get<IGroupController>(
+  const groupController = iocContainer.get<IGroupController>(
     TYPES.GroupController
   );
-  const groupService = container.get<IGroupService>(TYPES.GroupService);
+  const groupService = iocContainer.get<IGroupService>(TYPES.GroupService);
 
   const controllerErrorLoggerSpy = jest
     .spyOn(logUtils, 'controllerErrorLogger')
     // To keep console clear and clean during tests run
     .mockImplementation(() => null);
 
-  describe('Tests for "groupController.getAll":', () => {
+  describe('"groupController.getAll":', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<Group[]>;
     const getAllSpy = jest.spyOn(groupService, 'getAll');
 
-    test(`"getAll" should call "groupService.getAll" with correct params
+    test(`should call "groupService.getAll" with correct params
         and resolve with correct data`, async () => {
       const req = { query: {} } as Request<unknown, Group[]>;
 
@@ -60,7 +51,7 @@ describe('Group Controller tests', () => {
       expect(res.send).toBeCalledWith(mockGroups);
     });
 
-    test(`"getAll" should call "groupService.getAll" with correct params
+    test(`should call "groupService.getAll" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -84,12 +75,12 @@ describe('Group Controller tests', () => {
     });
   });
 
-  describe('Tests for "groupController.getOne":', () => {
+  describe('"groupController.getOne":', () => {
     const req = { params: { id: mockGroup.id } } as Request<GroupParams>;
     const res = ({ send: jest.fn() } as unknown) as Response<Group>;
     const getOneSpy = jest.spyOn(groupService, 'getOne');
 
-    test(`"getOne" should call "groupService.getOne" with correct params
+    test(`should call "groupService.getOne" with correct params
         and resolve with correct data`, async () => {
       getOneSpy.mockResolvedValueOnce(mockGroup);
 
@@ -100,7 +91,7 @@ describe('Group Controller tests', () => {
       expect(res.send).toBeCalledWith(mockGroup);
     });
 
-    test(`"getOne" should call "groupService.getOne" with correct params
+    test(`should call "groupService.getOne" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -122,7 +113,7 @@ describe('Group Controller tests', () => {
     });
   });
 
-  describe('Tests for "groupController.create":', () => {
+  describe('"groupController.create":', () => {
     const req = { body: groupCreationData } as Request<
       unknown,
       Group,
@@ -131,7 +122,7 @@ describe('Group Controller tests', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<Group>;
     const createSpy = jest.spyOn(groupService, 'create');
 
-    test(`"create" should call "groupService.create" with correct params
+    test(`should call "groupService.create" with correct params
         and resolve with correct data`, async () => {
       createSpy.mockResolvedValueOnce(mockGroup);
 
@@ -142,7 +133,7 @@ describe('Group Controller tests', () => {
       expect(res.send).toBeCalledWith(mockGroup);
     });
 
-    test(`"create" should call "groupService.create" with correct params
+    test(`should call "groupService.create" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -164,7 +155,7 @@ describe('Group Controller tests', () => {
     });
   });
 
-  describe('Tests for "groupController.update":', () => {
+  describe('"groupController.update":', () => {
     const req = {
       params: { id: mockGroup.id },
       body: groupUpdateData,
@@ -172,7 +163,7 @@ describe('Group Controller tests', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<Group>;
     const updateSpy = jest.spyOn(groupService, 'update');
 
-    test(`"update" should call "groupService.update" with correct params
+    test(`should call "groupService.update" with correct params
         and resolve with correct data`, async () => {
       updateSpy.mockResolvedValueOnce(mockGroupUpdated);
 
@@ -183,7 +174,7 @@ describe('Group Controller tests', () => {
       expect(res.send).toBeCalledWith(mockGroupUpdated);
     });
 
-    test(`"update" should call "groupService.update" with correct params
+    test(`should call "groupService.update" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -205,14 +196,14 @@ describe('Group Controller tests', () => {
     });
   });
 
-  describe('Tests for "groupController.delete":', () => {
+  describe('"groupController.delete":', () => {
     const req = {
       params: { id: mockGroup.id },
     } as Request<GroupParams>;
     const res = ({ send: jest.fn() } as unknown) as Response<string>;
     const deleteSpy = jest.spyOn(groupService, 'delete');
 
-    test(`"delete" should call "groupService.delete" with correct params
+    test(`should call "groupService.delete" with correct params
         and resolve with correct data`, async () => {
       deleteSpy.mockResolvedValueOnce(mockGroup);
 
@@ -225,7 +216,7 @@ describe('Group Controller tests', () => {
       );
     });
 
-    test(`"delete" should call "groupService.delete" with correct params
+    test(`should call "groupService.delete" with correct params
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
@@ -247,7 +238,7 @@ describe('Group Controller tests', () => {
     });
   });
 
-  describe('Tests for "groupController.addUsersToGroup":', () => {
+  describe('"groupController.addUsersToGroup":', () => {
     const usersIds = [mockUser.id];
     const req = {
       params: { id: mockGroup.id },
@@ -256,7 +247,7 @@ describe('Group Controller tests', () => {
     const res = ({ send: jest.fn() } as unknown) as Response<Group>;
     const addUsersToGroupSpy = jest.spyOn(groupService, 'addUsersToGroup');
 
-    test(`"addUsersToGroup" should call "groupService.addUsersToGroup" with
+    test(`should call "groupService.addUsersToGroup" with
         correct params and resolve with correct data`, async () => {
       addUsersToGroupSpy.mockResolvedValueOnce(groupWithAssignedUsers);
 
@@ -267,7 +258,7 @@ describe('Group Controller tests', () => {
       expect(res.send).toBeCalledWith(groupWithAssignedUsers);
     });
 
-    test(`"addUsersToGroup" should call "groupService.addUsersToGroup" with
+    test(`should call "groupService.addUsersToGroup" with
         correct params and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {

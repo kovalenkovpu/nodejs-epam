@@ -35,12 +35,12 @@ describe('Group Controller tests', () => {
     .mockImplementation(() => null);
 
   describe('"groupController.getAll":', () => {
-    const res = ({ send: jest.fn() } as unknown) as Response<Group[]>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const getAllSpy = jest.spyOn(groupService, 'getAll');
 
     test(`should call "groupService.getAll" with correct params
         and resolve with correct data`, async () => {
-      const req = { query: {} } as Request<unknown, Group[]>;
+      const req = { query: {} } as Request;
 
       getAllSpy.mockResolvedValueOnce(mockGroups);
 
@@ -55,7 +55,7 @@ describe('Group Controller tests', () => {
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
-      const req = { query: {} } as Request<unknown, Group[]>;
+      const req = { query: {} } as Request;
 
       getAllSpy.mockRejectedValueOnce(mockError);
 
@@ -77,7 +77,7 @@ describe('Group Controller tests', () => {
 
   describe('"groupController.getOne":', () => {
     const req = { params: { id: mockGroup.id } } as Request<GroupParams>;
-    const res = ({ send: jest.fn() } as unknown) as Response<Group>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const getOneSpy = jest.spyOn(groupService, 'getOne');
 
     test(`should call "groupService.getOne" with correct params
@@ -114,12 +114,8 @@ describe('Group Controller tests', () => {
   });
 
   describe('"groupController.create":', () => {
-    const req = { body: groupCreationData } as Request<
-      unknown,
-      Group,
-      GroupBase
-    >;
-    const res = ({ send: jest.fn() } as unknown) as Response<Group>;
+    const req = { body: groupCreationData } as Request;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const createSpy = jest.spyOn(groupService, 'create');
 
     test(`should call "groupService.create" with correct params
@@ -160,7 +156,7 @@ describe('Group Controller tests', () => {
       params: { id: mockGroup.id },
       body: groupUpdateData,
     } as Request<GroupParams, Group, GroupBase>;
-    const res = ({ send: jest.fn() } as unknown) as Response<Group>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const updateSpy = jest.spyOn(groupService, 'update');
 
     test(`should call "groupService.update" with correct params
@@ -200,7 +196,7 @@ describe('Group Controller tests', () => {
     const req = {
       params: { id: mockGroup.id },
     } as Request<GroupParams>;
-    const res = ({ send: jest.fn() } as unknown) as Response<string>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const deleteSpy = jest.spyOn(groupService, 'delete');
 
     test(`should call "groupService.delete" with correct params
@@ -244,7 +240,7 @@ describe('Group Controller tests', () => {
       params: { id: mockGroup.id },
       body: { usersIds },
     } as Request<GroupParams, Group, AddUserToGroupRequestBody>;
-    const res = ({ send: jest.fn() } as unknown) as Response<Group>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const addUsersToGroupSpy = jest.spyOn(groupService, 'addUsersToGroup');
 
     test(`should call "groupService.addUsersToGroup" with

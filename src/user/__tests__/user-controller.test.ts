@@ -16,11 +16,10 @@ import { TYPES } from '../../inversify.types';
 import {
   AutosuggestUsersQueryParams,
   AutosuggestUsersResponse,
-  GetAllUsersQueryParams,
   IUserController,
   UserParams,
 } from '../types/user-controller.types';
-import { User, UserBase, UserDTO } from '../types/user-dto';
+import { User, UserBase } from '../types/user-dto';
 import { IUserService } from '../types/user-service.types';
 
 describe('User Controller tests', () => {
@@ -37,9 +36,7 @@ describe('User Controller tests', () => {
     .mockImplementation(() => null);
 
   describe('"userController.getAll":', () => {
-    const res = ({ send: jest.fn() } as unknown) as Response<
-      User[] | UserDTO[]
-    >;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const getAllSpy = jest.spyOn(userService, 'getAll');
     const getAllWithCompleteDataSpy = jest.spyOn(
       userService,
@@ -49,12 +46,7 @@ describe('User Controller tests', () => {
     test(`should call "userService.getAll" with correct params
         and resolve with correct data if it's envoked
         with no query parameters`, async () => {
-      const req = { query: {} } as Request<
-        unknown,
-        User[] | UserDTO[],
-        any,
-        GetAllUsersQueryParams
-      >;
+      const req = { query: {} } as Request;
 
       getAllSpy.mockResolvedValueOnce(mockUsers);
 
@@ -71,12 +63,7 @@ describe('User Controller tests', () => {
         "withCompleteData" query parameter`, async () => {
       const req = ({
         query: { withCompleteData: 'true' },
-      } as unknown) as Request<
-        unknown,
-        User[] | UserDTO[],
-        any,
-        GetAllUsersQueryParams
-      >;
+      } as unknown) as Request;
       getAllWithCompleteDataSpy.mockResolvedValueOnce(
         mockUsersWithCompleteData
       );
@@ -93,12 +80,7 @@ describe('User Controller tests', () => {
         and properly reject in case of error:
         - call "controllerErrorLogger" log util with correct params
         - call "next" with thrown error`, async () => {
-      const req = { query: {} } as Request<
-        unknown,
-        User[] | UserDTO[],
-        any,
-        GetAllUsersQueryParams
-      >;
+      const req = { query: {} } as Request;
 
       getAllSpy.mockRejectedValueOnce(mockError);
 
@@ -129,7 +111,7 @@ describe('User Controller tests', () => {
     >;
     const res = ({
       send: jest.fn(),
-    } as unknown) as Response<AutosuggestUsersResponse>;
+    } as unknown) as Response;
 
     const getAutoSuggestUsersSpy = jest.spyOn(
       userService,
@@ -208,8 +190,8 @@ describe('User Controller tests', () => {
   });
 
   describe('"userController.create":', () => {
-    const req = { body: userCreationData } as Request<unknown, User, UserBase>;
-    const res = ({ send: jest.fn() } as unknown) as Response<User>;
+    const req = { body: userCreationData } as Request;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const createSpy = jest.spyOn(userService, 'create');
 
     test(`should call "userService.create" with correct params
@@ -250,7 +232,7 @@ describe('User Controller tests', () => {
       params: { id: mockUser.id },
       body: userUpdateData,
     } as Request<UserParams, User, UserBase>;
-    const res = ({ send: jest.fn() } as unknown) as Response<User>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const updateSpy = jest.spyOn(userService, 'update');
 
     test(`should call "userService.update" with correct params
@@ -290,7 +272,7 @@ describe('User Controller tests', () => {
     const req = {
       params: { id: mockUser.id },
     } as Request<UserParams>;
-    const res = ({ send: jest.fn() } as unknown) as Response<string>;
+    const res = ({ send: jest.fn() } as unknown) as Response;
     const deleteSpy = jest.spyOn(userService, 'delete');
 
     test(`should call "userService.delete" with correct params
